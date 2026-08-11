@@ -1,0 +1,69 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  # Called by release.yml after a tag creates a release. A release published by
+  # GITHUB_TOKEN does not trigger workflows on its own, so it is invoked here
+  # rather than listening for `release: published`.
+  workflow_call:
+  push:
+    branches:
+      - main
+    paths:
+      - "broadlink2mqtt/**"
+      - ".github/workflows/builder.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "broadlink2mqtt/**"
+
+env:
+  ADDON: broadlink2mqtt
+
+jobs:
+  build:
+    name: Build ${{ matrix.arch }}
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - aarch64
+          - amd64
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v5
+
+      - name: Get the add-on version
+        id: version
+        run: |
+          VERSION=$(grep '^version:' "${ADDON}/config.yaml" | cut -d'"' -f2)
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Building ${ADDON} ${VERSION} for ${{ matrix.arch }}"
+
+      # Pull requests only verify that the image builds; nothing is published.
+      - name: Log in to the container registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build add-on
+        uses: home-assistant/builder@master
+        with:
+          args: |
+            --${{ matrix.arch }} \
+            --target /data/${{ env.ADDON }} \
+            --image "${{ env.ADDON }}-{arch}" \
+            --docker-hub "ghcr.io/${{ github.repository_owner }}" \
+            --addon \
+            ${{ github.event_name == 'pull_request' && '--test' || '' }}

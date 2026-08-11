@@ -1,0 +1,478 @@
+:root {
+  --bg: #0b1326;
+  --surface: #131b2e;
+  --surface-high: #1e293b;
+  --on-bg: #dae2fd;
+  --on-muted: #9aa7c7;
+  --primary: #4edea3;
+  --gold: #e9c349;
+  --blue: #5ea0ff;
+  --outline: #86948a;
+  --danger: #ff6b6b;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--on-bg);
+  font-family: "Manrope", system-ui, sans-serif;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4 {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+code, pre, .mono {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--primary);
+}
+
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ---------- Nav ---------- */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(78, 222, 163, 0.12);
+  position: sticky;
+  top: 0;
+  background: rgba(11, 19, 38, 0.92);
+  backdrop-filter: blur(8px);
+  z-index: 50;
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--on-bg);
+}
+
+.brand {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+
+.brand .accent {
+  color: var(--primary);
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.nav-links a {
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 0.92rem;
+  transition: color 0.15s ease;
+}
+
+.nav-links a:hover {
+  color: var(--primary);
+}
+
+/* ---------- Responsive nav ---------- */
+@media (max-width: 640px) {
+  .nav {
+    flex-wrap: wrap;
+    row-gap: 10px;
+    padding: 14px 16px;
+  }
+
+  .nav-links {
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .nav-links a {
+    font-size: 0.85rem;
+  }
+}
+
+.badge {
+  display: inline-block;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.7rem;
+  background: rgba(78, 222, 163, 0.15);
+  color: var(--primary);
+  border: 1px solid rgba(78, 222, 163, 0.35);
+  padding: 2px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.05em;
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  text-align: center;
+  padding: 88px 24px 64px;
+}
+
+.hero h1 {
+  font-size: clamp(2.2rem, 6vw, 3.6rem);
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+
+.hero p.lede {
+  max-width: 640px;
+  margin: 0 auto 28px;
+  color: var(--on-muted);
+  font-size: 1.12rem;
+}
+
+.typed {
+  color: var(--on-muted);
+  white-space: nowrap;
+}
+
+.typed-cursor {
+  display: inline-block;
+  width: 3px;
+  height: 0.9em;
+  background: var(--primary);
+  margin-left: 2px;
+  vertical-align: baseline;
+  animation: typed-blink 1s step-end infinite;
+}
+
+@keyframes typed-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.cta-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-block;
+  padding: 12px 22px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #002113;
+}
+
+.btn-ghost {
+  border: 1px solid var(--primary);
+  color: var(--primary);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  margin-right: 6px;
+  display: inline-block;
+  fill: currentColor;
+}
+
+/* ---------- Sections ---------- */
+section {
+  padding: 56px 0;
+}
+
+.section-title {
+  font-size: 1.7rem;
+  margin-bottom: 12px;
+}
+
+.section-sub {
+  color: var(--on-muted);
+  max-width: 640px;
+  margin-bottom: 28px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid rgba(78, 222, 163, 0.12);
+  border-radius: 14px;
+  padding: 22px;
+}
+
+.card h3 {
+  margin-bottom: 8px;
+  font-size: 1.05rem;
+}
+
+.card p {
+  color: var(--on-muted);
+  font-size: 0.92rem;
+}
+
+/* ---------- Steps ---------- */
+.steps {
+  counter-reset: step;
+  list-style: none;
+}
+
+.steps li {
+  position: relative;
+  padding: 0 0 24px 56px;
+  counter-increment: step;
+}
+
+.steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(78, 222, 163, 0.15);
+  border: 1px solid rgba(78, 222, 163, 0.4);
+  color: var(--primary);
+  display: grid;
+  place-items: center;
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 700;
+}
+
+.steps li h3 {
+  margin-bottom: 4px;
+}
+
+.steps li p {
+  color: var(--on-muted);
+  font-size: 0.95rem;
+}
+
+/* ---------- Code ---------- */
+pre {
+  background: var(--surface-high);
+  border: 1px solid rgba(78, 222, 163, 0.12);
+  border-radius: 12px;
+  padding: 18px 20px;
+  overflow-x: auto;
+  font-size: 0.86rem;
+  margin: 12px 0 24px;
+  color: #cfe3ff;
+}
+
+pre .c { color: var(--outline); }
+pre .k { color: var(--gold); }
+pre .s { color: var(--primary); }
+pre .n { color: #89ceff; }
+
+/* ---------- Callouts ---------- */
+.note, .warn, .ok {
+  border-left: 3px solid var(--primary);
+  background: rgba(78, 222, 163, 0.08);
+  padding: 12px 16px;
+  border-radius: 0 10px 10px 0;
+  margin: 16px 0;
+  font-size: 0.94rem;
+}
+
+.warn {
+  border-left-color: var(--gold);
+  background: rgba(233, 195, 73, 0.08);
+}
+
+.ok {
+  border-left-color: var(--primary);
+  background: rgba(78, 222, 163, 0.08);
+}
+
+/* ---------- Table ---------- */
+.table-wrap {
+  overflow-x: auto;
+  margin: 12px 0 24px;
+  border-radius: 12px;
+  border: 1px solid rgba(78, 222, 163, 0.12);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th, td {
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(78, 222, 163, 0.08);
+}
+
+th {
+  font-family: "Space Grotesk", sans-serif;
+  color: var(--primary);
+  background: var(--surface);
+}
+
+tbody tr:hover {
+  background: rgba(78, 222, 163, 0.05);
+}
+
+/* ---------- Footer ---------- */
+footer {
+  border-top: 1px solid rgba(78, 222, 163, 0.12);
+  padding: 32px 24px;
+  text-align: center;
+  color: var(--on-muted);
+  font-size: 0.88rem;
+}
+
+footer a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+/* ---------- Page header (inner pages) ---------- */
+.page-header {
+  padding: 56px 0 8px;
+}
+
+.page-header h1 {
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  margin-bottom: 8px;
+}
+
+.page-header p {
+  color: var(--on-muted);
+  max-width: 640px;
+}
+
+.content {
+  padding-bottom: 56px;
+}
+
+.content h2 {
+  font-size: 1.4rem;
+  margin: 36px 0 12px;
+  padding-top: 12px;
+}
+
+.content h3 {
+  font-size: 1.1rem;
+  margin: 24px 0 8px;
+}
+
+.content p {
+  margin-bottom: 12px;
+}
+
+.content ul, .content ol {
+  padding-left: 24px;
+  margin-bottom: 16px;
+}
+
+.content li {
+  margin-bottom: 6px;
+}
+
+.content a {
+  color: var(--primary);
+}
+
+/* ---------- FAQ ---------- */
+.faq-item {
+  background: var(--surface);
+  border: 1px solid rgba(78, 222, 163, 0.12);
+  border-radius: 12px;
+  padding: 20px 22px;
+  margin-bottom: 12px;
+}
+
+.faq-item h3 {
+  margin-bottom: 8px;
+  color: var(--on-bg);
+}
+
+.faq-item p {
+  color: var(--on-muted);
+  font-size: 0.95rem;
+}
+
+.muted { color: var(--on-muted); }
+.accent { color: var(--primary); }
+.gold { color: var(--gold); }
+
+/* ---------- Model chips ---------- */
+.chip {
+  display: inline-block;
+  background: rgba(94, 160, 255, 0.08);
+  border: 1px solid rgba(94, 160, 255, 0.22);
+  border-radius: 6px;
+  padding: 2px 8px;
+  margin: 2px 4px 2px 0;
+  font-size: 0.82rem;
+  color: var(--blue);
+}
+
+.chip-free {
+  background: rgba(78, 222, 163, 0.08);
+  border-color: rgba(78, 222, 163, 0.25);
+  color: var(--primary);
+}
+
+/* Quoted upstream discussion (e.g. the core PR review) */
+blockquote {
+  border-left: 3px solid var(--blue);
+  background: rgba(94, 160, 255, 0.07);
+  padding: 14px 20px;
+  border-radius: 0 10px 10px 0;
+  margin: 20px 0;
+  color: var(--on-muted);
+  font-style: italic;
+}
+
+blockquote p {
+  margin: 0;
+}
+
+blockquote + p {
+  margin-top: 16px;
+}

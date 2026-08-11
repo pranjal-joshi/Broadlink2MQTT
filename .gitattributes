@@ -1,0 +1,6 @@
+# Everything checked out with LF — these files run inside a Linux container.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.ico binary

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://pranjal-joshi.github.io/Broadlink2MQTT/
+    about: Installation, configuration, and troubleshooting
+  - name: Home Assistant Community
+    url: https://community.home-assistant.io/
+    about: General Home Assistant questions

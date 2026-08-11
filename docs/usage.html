@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Usage · Broadlink2MQTT</title>
+  <meta name="description" content="Capture and send IR codes with Broadlink2MQTT: the learning-mode switch, the emitter entity, and automation recipes."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/style.css"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230b1326%22/><circle cx=%2236%22 cy=%2250%22 r=%2216%22 fill=%22none%22 stroke=%22%234edea3%22 stroke-width=%227%22/><circle cx=%2236%22 cy=%2250%22 r=%225%22 fill=%22%23e9c349%22/><path d=%22M60 34a24 24 0 0 1 0 32%22 fill=%22none%22 stroke=%22%234edea3%22 stroke-width=%227%22 stroke-linecap=%22round%22/><path d=%22M74 26a38 38 0 0 1 0 48%22 fill=%22none%22 stroke=%22%234edea3%22 stroke-width=%227%22 stroke-linecap=%22round%22/></svg>"/>
+</head>
+<body>
+  <nav class="nav">
+    <a class="nav-inner" href="index.html">
+      <span class="brand">Broadlink2MQTT<span class="accent">.</span></span>
+      <span class="badge">HA Add-on</span>
+    </a>
+    <div class="nav-links">
+      <a href="install.html">Install</a>
+      <a href="configuration.html">Configuration</a>
+      <a href="usage.html">Usage</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <header class="page-header">
+      <h1>Usage</h1>
+      <p>Capturing codes, sending them, and wiring both into automations.</p>
+    </header>
+
+    <div class="content">
+      <h2>Your entities</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Entity</th><th>Type</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Emitter</strong></td><td><code>infrared</code></td><td>Send IR. Consumed by device integrations and <code>infrared.send_command</code>.</td></tr>
+            <tr><td><strong>Receiver</strong></td><td><code>infrared</code></td><td>Reports captured signals while learning mode is on.</td></tr>
+            <tr><td><strong>Learning mode</strong></td><td><code>switch</code></td><td>Opens the capture window. Closes itself.</td></tr>
+            <tr><td><strong>Last captured code</strong></td><td><code>sensor</code></td><td>Most recent capture; base64 and timings in its attributes.</td></tr>
+            <tr><td><strong>Temperature</strong> / <strong>Humidity</strong></td><td><code>sensor</code></td><td>RM pro, RM4 mini and RM4 pro only.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Capturing a code</h2>
+      <ol class="steps">
+        <li>
+          <h3>Turn on Learning mode</h3>
+          <p>The blaster's LED lights up. The add-on now holds it armed and polls it once a second, re-arming every 20 seconds ahead of the firmware timeout.</p>
+        </li>
+        <li>
+          <h3>Press a button on your remote</h3>
+          <p>Aim at the blaster from within a metre or so. The <strong>Receiver</strong> entity's state updates to the capture timestamp.</p>
+        </li>
+        <li>
+          <h3>Read the result</h3>
+          <p><strong>Last captured code</strong> now holds the code. The full packet is in its attributes.</p>
+        </li>
+        <li>
+          <h3>Let it close</h3>
+          <p>The switch turns itself off after 15 seconds of quiet, or 60 seconds total. Each capture extends the window, so you can record several buttons in one session.</p>
+        </li>
+      </ol>
+
+      <div class="note">
+        Nothing captured? The window is still open — just press the button again. If
+        the switch flips off immediately, something else holds the device's learning
+        session; see the <a href="faq.html">FAQ</a>.
+      </div>
+
+      <h3>Getting the raw code out</h3>
+      <pre><code>{{ state_attr('sensor.living_room_blaster_last_captured_code', 'base64') }}
+{{ state_attr('sensor.living_room_blaster_last_captured_code', 'timings') }}</code></pre>
+      <p>The <code>base64</code> attribute is the Broadlink packet exactly as the official integration stores it, so it drops straight into <code>remote.send_command</code> with a <code>b64:</code> prefix if you still use that elsewhere.</p>
+
+      <h2>Sending a code</h2>
+      <pre><code>actions:
+  - action: infrared.send_command
+    target:
+      entity_id: infrared.living_room_blaster_emitter
+    data:
+      timings: [9000, -4500, 560, -560, 560, -1690, 560]
+      modulation: 38000
+      repeat_count: 1</code></pre>
+
+      <p>Positive numbers are carrier-on, negative are carrier-off, both in microseconds. Or publish to the topic yourself:</p>
+
+      <pre><code>actions:
+  - action: mqtt.publish
+    data:
+      topic: broadlink2mqtt/a1b2c3d4e5f6/emitter/set
+      payload: >-
+        {"timings": [9000, -4500, 560], "modulation": 38000, "repeat_count": 0}</code></pre>
+
+      <div class="note">
+        <code>repeat_count</code> genuinely works here. Upstream's encoder leaves the
+        packet's repeat byte at zero and the core PR never set it; this add-on patches
+        it in. Use <code>1</code> or <code>2</code> for stubborn air-conditioners.
+      </div>
+
+      <h2>Recipes</h2>
+
+      <h3>Capture straight into an input_text</h3>
+      <pre><code>automation:
+  - alias: Store the last IR code
+    triggers:
+      - trigger: state
+        entity_id: sensor.living_room_blaster_last_captured_code
+    actions:
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.ir_scratchpad
+        data:
+          value: "{{ state_attr(trigger.entity_id, 'base64') }}"</code></pre>
+
+      <h3>React to a remote button press</h3>
+      <p>Leave learning mode on and use the receiver as a trigger. Compare against a known capture:</p>
+      <pre><code>automation:
+  - alias: Dim the lights when the remote's red button is pressed
+    triggers:
+      - trigger: state
+        entity_id: infrared.living_room_blaster_receiver
+    conditions:
+      - condition: template
+        value_template: >-
+          {{ state_attr('sensor.living_room_blaster_last_captured_code', 'base64')
+             == 'JgBQAAABJ5MTOBM4ExMTExMTExMT...' }}
+    actions:
+      - action: light.turn_on
+        target:
+          entity_id: light.living_room
+        data:
+          brightness_pct: 30</code></pre>
+
+      <div class="warn">
+        This costs you transmission. While learning mode is on the device cannot send,
+        and the LED stays lit. It suits a dedicated blaster used only for receiving —
+        not the one running your TV.
+      </div>
+
+      <h3>Hold a long capture session</h3>
+      <pre><code>automation:
+  - alias: Hold IR learning open
+    triggers:
+      - trigger: state
+        entity_id: switch.living_room_blaster_learning_mode
+        to: "off"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.ir_capture_session
+        state: "on"
+    actions:
+      - action: switch.turn_on
+        target:
+          entity_id: switch.living_room_blaster_learning_mode</code></pre>
+      <p>Flip <code>input_boolean.ir_capture_session</code> on while you work through a remote, then off when you're done. Raising <code>capture_limit</code> is the simpler alternative.</p>
+
+      <h2>Using it with device integrations</h2>
+      <p>The point of a real <code>infrared</code> entity is that other integrations can drive it. Anything that asks for an infrared emitter — LG Infrared and the rest of the growing set — will list your Broadlink blaster and handle the codes for you, with no captures needed at all.</p>
+    </div>
+  </div>
+
+  <footer>
+    <p><a href="index.html">Broadlink2MQTT</a> · a Home Assistant add-on · <a href="https://github.com/pranjal-joshi/Broadlink2MQTT" target="_blank" rel="noopener">Source</a> · MIT License</p>
+  </footer>
+</body>
+</html>

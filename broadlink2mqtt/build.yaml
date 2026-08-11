@@ -1,0 +1,10 @@
+---
+build_from:
+  aarch64: ghcr.io/home-assistant/aarch64-base-python:3.13-alpine3.22
+  amd64: ghcr.io/home-assistant/amd64-base-python:3.13-alpine3.22
+labels:
+  org.opencontainers.image.title: Broadlink2MQTT
+  org.opencontainers.image.description: >-
+    Broadlink RM IR blasters as Home Assistant MQTT infrared entities
+  org.opencontainers.image.source: https://github.com/pranjal-joshi/Broadlink2MQTT
+  org.opencontainers.image.licenses: MIT

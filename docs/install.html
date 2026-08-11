@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Installation · Broadlink2MQTT</title>
+  <meta name="description" content="Install the Broadlink2MQTT Home Assistant add-on, or run it as a plain Docker container."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/style.css"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230b1326%22/><circle cx=%2236%22 cy=%2250%22 r=%2216%22 fill=%22none%22 stroke=%22%234edea3%22 stroke-width=%227%22/><circle cx=%2236%22 cy=%2250%22 r=%225%22 fill=%22%23e9c349%22/><path d=%22M60 34a24 24 0 0 1 0 32%22 fill=%22none%22 stroke=%22%234edea3%22 stroke-width=%227%22 stroke-linecap=%22round%22/><path d=%22M74 26a38 38 0 0 1 0 48%22 fill=%22none%22 stroke=%22%234edea3%22 stroke-width=%227%22 stroke-linecap=%22round%22/></svg>"/>
+</head>
+<body>
+  <nav class="nav">
+    <a class="nav-inner" href="index.html">
+      <span class="brand">Broadlink2MQTT<span class="accent">.</span></span>
+      <span class="badge">HA Add-on</span>
+    </a>
+    <div class="nav-links">
+      <a href="install.html">Install</a>
+      <a href="configuration.html">Configuration</a>
+      <a href="usage.html">Usage</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <header class="page-header">
+      <h1>Installation</h1>
+      <p>Install as a Home Assistant add-on, or run the same image as a plain container.</p>
+    </header>
+
+    <div class="content">
+      <h2>Prerequisites</h2>
+      <ul>
+        <li>Home Assistant <code>2026.8</code> or newer — this is when the MQTT infrared emitter and receiver schemas landed</li>
+        <li>Home Assistant OS or Supervised, for the add-on route</li>
+        <li>An MQTT broker — the <a href="https://github.com/home-assistant/addons/tree/master/mosquitto" target="_blank" rel="noopener">Mosquitto broker add-on</a> is detected automatically</li>
+        <li>The <a href="https://www.home-assistant.io/integrations/mqtt/" target="_blank" rel="noopener">MQTT integration</a> set up and connected to that broker</li>
+        <li>A Broadlink RM mini 3, RM pro, RM4 mini or RM4 pro on the same subnet</li>
+        <li><code>aarch64</code> or <code>amd64</code> — see the note at the bottom</li>
+      </ul>
+
+      <div class="warn">
+        <strong>Remove your blaster from the official Broadlink integration first.</strong>
+        Settings → Devices &amp; Services → Broadlink → delete the device. Both compete
+        for the same IR front end, and <code>remote.learn_command</code> will fail while
+        a capture window is open.
+      </div>
+
+      <h2>Option 1 — Add-on (recommended)</h2>
+
+      <p>
+        <a href="https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fpranjal-joshi%2FBroadlink2MQTT" target="_blank" rel="noopener">
+          <img src="https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg" alt="Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled."/>
+        </a>
+      </p>
+
+      <ol class="steps">
+        <li>
+          <h3>Open the add-on store</h3>
+          <p>Go to <strong>Settings → Add-ons → Add-on Store</strong>.</p>
+        </li>
+        <li>
+          <h3>Add this repository</h3>
+          <p>Click the <strong>⋮</strong> menu (top-right) → <strong>Repositories</strong>. Add:</p>
+          <pre><code><span class="n">https://github.com/pranjal-joshi/Broadlink2MQTT</span></code></pre>
+          <p>then <strong>Add</strong> and <strong>Close</strong>. Refresh the page if the new section does not appear.</p>
+        </li>
+        <li>
+          <h3>Install</h3>
+          <p>Find <strong>Broadlink2MQTT</strong> in the new repository section and click <strong>Install</strong>. The prebuilt image is pulled from ghcr.io, so this takes seconds rather than minutes.</p>
+        </li>
+        <li>
+          <h3>Start</h3>
+          <p>Click <strong>Start</strong>. If you run the Mosquitto broker add-on, no configuration is needed — the add-on asks the Supervisor for your broker.</p>
+        </li>
+        <li>
+          <h3>Check the log</h3>
+          <p>Open the <strong>Log</strong> tab. You want to see lines like:</p>
+          <pre><code>Found RM4 pro (RM4PRO) at 192.168.1.50 [a1:b2:c3:d4:e5:f6]
+Connected to MQTT at core-mosquitto:1883
+Announced 6 entities for RM4 pro</code></pre>
+          <p>Your blaster now appears under <strong>Settings → Devices &amp; Services → MQTT</strong>.</p>
+        </li>
+      </ol>
+
+      <div class="note">
+        Turn on <strong>Start on boot</strong> and <strong>Watchdog</strong> from the add-on's
+        Info tab so it comes back after a restart or a crash.
+      </div>
+
+      <h2>Option 2 — Plain Docker</h2>
+      <p>The add-on image is an ordinary container. Home networking is required so the UDP discovery broadcast reaches your device.</p>
+      <pre><code>docker run -d \
+  --name broadlink2mqtt \
+  --network host \
+  --restart unless-stopped \
+  -e MQTT_HOST=192.168.1.10 \
+  -e MQTT_USERNAME=homeassistant \
+  -e MQTT_PASSWORD=secret \
+  -e LOG_LEVEL=info \
+  ghcr.io/pranjal-joshi/broadlink2mqtt-amd64:1.0.0</code></pre>
+      <p>Use <code>broadlink2mqtt-aarch64</code> on 64-bit ARM. Add <code>-e DEVICES=192.168.1.50,192.168.1.51</code> to skip broadcast discovery and address devices directly.</p>
+
+      <h2>Architecture support</h2>
+      <p><code>python-broadlink</code> depends on <code>cryptography</code>, which only publishes musl wheels for <code>aarch64</code> and <code>x86_64</code>. Building it for 32-bit ARM would need a Rust toolchain in the image, so <code>armv7</code>, <code>armhf</code> and <code>i386</code> are not supported.</p>
+
+      <div class="note">
+        This covers Raspberry Pi 4 and 5 on a 64-bit OS, every Intel/AMD install, and
+        most NAS deployments. If you are on a 32-bit Pi OS image, switching to the
+        64-bit build is the fix.
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p><a href="index.html">Broadlink2MQTT</a> · a Home Assistant add-on · <a href="https://github.com/pranjal-joshi/Broadlink2MQTT" target="_blank" rel="noopener">Source</a> · MIT License</p>
+  </footer>
+</body>
+</html>

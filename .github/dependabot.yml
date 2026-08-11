@@ -1,0 +1,25 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+      - github-actions
+
+  - package-ecosystem: pip
+    directory: "/broadlink2mqtt"
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+      - python
+
+  - package-ecosystem: docker
+    directory: "/broadlink2mqtt"
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+      - docker

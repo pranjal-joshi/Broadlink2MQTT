@@ -1,0 +1,86 @@
+name: Bug report
+description: Something is not working as expected
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. Please set the add-on's
+        `log_level` to `debug`, reproduce the problem, and include the log below.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Turn on the Learning mode switch
+        2. Press a button on the remote
+        3. ...
+    validations:
+      required: true
+
+  - type: input
+    id: addon-version
+    attributes:
+      label: Add-on version
+      placeholder: "1.0.0"
+    validations:
+      required: true
+
+  - type: input
+    id: ha-version
+    attributes:
+      label: Home Assistant version
+      placeholder: "2026.8.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: device
+    attributes:
+      label: Broadlink device
+      options:
+        - RM mini 3 (RMMINI)
+        - RM mini 3 new firmware (RMMINIB)
+        - RM pro (RMPRO)
+        - RM4 mini (RM4MINI)
+        - RM4 pro (RM4PRO)
+        - Other / not sure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: install-type
+    attributes:
+      label: Installation
+      options:
+        - Home Assistant OS
+        - Home Assistant Supervised
+        - Plain Docker container
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: The device is **not** also added to the official Broadlink integration
+          required: true
+        - label: I have included a debug-level log below
+          required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Add-on log
+      render: shell

@@ -1,0 +1,113 @@
+[project]
+name = "broadlink2mqtt"
+version = "1.0.0"
+description = "Bridge Broadlink RM IR blasters to Home Assistant as MQTT infrared entities"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+authors = [
+    {name = "Pranjal Joshi", email = "pranjaljoshi2611@gmail.com"}
+]
+keywords = ["home-assistant", "addon", "broadlink", "mqtt", "infrared", "ir"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Home Automation",
+]
+
+dependencies = [
+    "broadlink==0.19.0",
+    "aiomqtt==2.5.1",
+    "aiohttp==3.14.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.3.0",
+    "mypy>=1.8.0",
+    "pre-commit>=3.6.0",
+]
+
+[project.scripts]
+broadlink2mqtt = "broadlink2mqtt.__main__:main"
+
+[project.urls]
+Homepage = "https://pranjal-joshi.github.io/Broadlink2MQTT/"
+Source = "https://github.com/pranjal-joshi/Broadlink2MQTT"
+Issues = "https://github.com/pranjal-joshi/Broadlink2MQTT/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["broadlink2mqtt/src/broadlink2mqtt"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "A", "C4", "DTZ", "T10", "ICN", "PIE", "PT", "Q", "RET", "SIM", "TID", "ARG", "PTH", "ERA", "PL", "TRY", "RUF"]
+ignore = [
+    "E501",
+    "TRY003",
+    "TRY300",
+    "TRY400",
+    "N818",
+    "PLR0911",
+    "PLR0913",
+    "PLW2901",
+    "PLR2004",
+    "ARG001",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["PLR2004", "S101"]
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+follow_imports = "normal"
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["broadlink2mqtt/src"]
+asyncio_mode = "auto"
+addopts = "-ra -q --strict-markers"
+markers = [
+    "unit: unit tests",
+    "integration: integration tests",
+]
+
+[tool.coverage.run]
+source = ["broadlink2mqtt/src"]
+omit = ["*/tests/*", "*/__pycache__/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "@abstractmethod",
+]

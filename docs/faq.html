@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FAQ · Broadlink2MQTT</title>
+  <meta name="description" content="Frequently asked questions and troubleshooting for the Broadlink2MQTT Home Assistant add-on."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/style.css"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230b1326%22/><circle cx=%2236%22 cy=%2250%22 r=%2216%22 fill=%22none%22 stroke=%22%234edea3%22 stroke-width=%227%22/><circle cx=%2236%22 cy=%2250%22 r=%225%22 fill=%22%23e9c349%22/><path d=%22M60 34a24 24 0 0 1 0 32%22 fill=%22none%22 stroke=%22%234edea3%22 stroke-width=%227%22 stroke-linecap=%22round%22/><path d=%22M74 26a38 38 0 0 1 0 48%22 fill=%22none%22 stroke=%22%234edea3%22 stroke-width=%227%22 stroke-linecap=%22round%22/></svg>"/>
+</head>
+<body>
+  <nav class="nav">
+    <a class="nav-inner" href="index.html">
+      <span class="brand">Broadlink2MQTT<span class="accent">.</span></span>
+      <span class="badge">HA Add-on</span>
+    </a>
+    <div class="nav-links">
+      <a href="install.html">Install</a>
+      <a href="configuration.html">Configuration</a>
+      <a href="usage.html">Usage</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <header class="page-header">
+      <h1>FAQ &amp; Troubleshooting</h1>
+      <p>The questions that come up most, and what to do when something misbehaves.</p>
+    </header>
+
+    <div class="content">
+      <h2>General</h2>
+
+      <h3>Why not a HACS integration?</h3>
+      <p>Because there is nothing left for one to do. Home Assistant's MQTT integration already creates infrared emitter and receiver entities from discovery messages, and the codec arithmetic lives upstream in <code>python-broadlink</code>. A custom component would reimplement both, and would have to run a long-lived polling state machine inside HA's event loop — which is precisely what core rejected. An external bridge is the natural home for it.</p>
+
+      <h3>Can I keep the official Broadlink integration too?</h3>
+      <p>No — remove the device from it. A Broadlink RM can transmit <em>or</em> be armed for learning, never both, and any use of the front end kills an armed session. Two processes fighting over it produces failures that look random. The add-on publishes the temperature and humidity sensors itself so you lose nothing.</p>
+
+      <h3>Does this replace <code>remote.send_command</code>?</h3>
+      <p>It can, but it doesn't have to. The <strong>Last captured code</strong> sensor exposes the same base64 packet the official integration stores, so existing scripts keep working if you keep that integration for another device.</p>
+
+      <h3>Why is modulation always 38000?</h3>
+      <p>Broadlink hardware does not report the carrier frequency it captured, and the encoder's 32.84 µs tick assumes 38 kHz. Signals at other carriers still round-trip correctly — the device replays what it recorded — but the reported <code>modulation</code> is a fixed value, not a measurement. Treat it as a label, not data.</p>
+
+      <h3>What about RF (315/433 MHz)?</h3>
+      <p>Out of scope. RM pro and RM4 pro can learn RF, but Home Assistant's infrared entities are IR only, and there is a separate radio frequency platform for that. The add-on rejects RF packets rather than reporting them as bogus IR signals.</p>
+
+      <h2>Troubleshooting</h2>
+
+      <h3>No devices found</h3>
+      <ul>
+        <li>Check the add-on's <strong>host networking</strong> is still enabled — discovery is a UDP broadcast that cannot cross the add-on's bridge network.</li>
+        <li>Confirm the blaster is on the same subnet. Broadcasts do not cross VLANs; list the device by IP under <code>devices</code> instead.</li>
+        <li>Make sure the device is not locked to the Broadlink cloud app. Unlock it in the app, or factory-reset and re-pair without locking.</li>
+      </ul>
+
+      <h3>Codes capture, but the emitter does nothing</h3>
+      <p>Almost always aim or range. An RM mini's emitter is quite directional and much weaker than the original remote. Move it closer, point it squarely, and try <code>repeat_count: 1</code> — some air-conditioners ignore a single frame.</p>
+
+      <h3>The learning switch turns itself off immediately</h3>
+      <p>The device rejected <code>enter_learning</code>. Nearly always because something else holds the session — usually the official Broadlink integration, occasionally the Broadlink phone app left open on a learning screen. Remove the device from the integration, close the app, restart the add-on.</p>
+
+      <h3>Nothing appears in Home Assistant</h3>
+      <ol class="steps">
+        <li>
+          <h3>Check the add-on log</h3>
+          <p>You want <code>Announced 6 entities for …</code>. If you see it, the add-on has done its job and the problem is downstream.</p>
+        </li>
+        <li>
+          <h3>Check the discovery prefix</h3>
+          <p><code>discovery_prefix</code> must match the MQTT integration's setting (<code>homeassistant</code> unless you changed it).</p>
+        </li>
+        <li>
+          <h3>Check your Home Assistant version</h3>
+          <p>The MQTT infrared schemas need <code>2026.8</code> or newer. On older versions the discovery messages are silently ignored.</p>
+        </li>
+      </ol>
+
+      <h3>Entities show as unavailable</h3>
+      <p>Entities require <em>both</em> the bridge and the device to be online. Check <code>broadlink2mqtt/status</code> for the bridge and <code>broadlink2mqtt/&lt;mac&gt;/availability</code> for the device. A device goes unavailable after a failed sensor poll or a failed transmission, and recovers on the next success.</p>
+
+      <h3>The LED stays lit after I turn learning mode off</h3>
+      <p>Expected. There is no "exit learning" command in the protocol — the firmware times out on its own within about 30 seconds.</p>
+
+      <h3>The add-on will not install on my Raspberry Pi</h3>
+      <p>You are probably on a 32-bit OS image. <code>cryptography</code>, which <code>python-broadlink</code> depends on, has no musl wheels for 32-bit ARM. Reflash with the 64-bit Home Assistant OS image, or run the bridge on another machine and point it at your broker.</p>
+
+      <h2>Reporting a problem</h2>
+      <p>Set <code>log_level: debug</code>, restart the add-on, reproduce the issue, and <a href="https://github.com/pranjal-joshi/Broadlink2MQTT/issues/new/choose" target="_blank" rel="noopener">open an issue</a> with the log, your device model, and your Home Assistant version.</p>
+    </div>
+  </div>
+
+  <footer>
+    <p><a href="index.html">Broadlink2MQTT</a> · a Home Assistant add-on · <a href="https://github.com/pranjal-joshi/Broadlink2MQTT" target="_blank" rel="noopener">Source</a> · MIT License</p>
+  </footer>
+</body>
+</html>
