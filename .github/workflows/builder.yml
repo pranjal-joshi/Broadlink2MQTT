@@ -2,21 +2,18 @@ name: Build
 
 on:
   workflow_dispatch:
-  # Called by release.yml after a tag creates a release. A release published by
-  # GITHUB_TOKEN does not trigger workflows on its own, so it is invoked here
-  # rather than listening for `release: published`.
-  workflow_call:
+  # Images are published on tags only, so `latest` always points at a release
+  # rather than at whatever last landed on main. Pull requests build without
+  # pushing, which is what catches a broken Dockerfile before it merges.
   push:
-    branches:
-      - main
-    paths:
-      - "broadlink2mqtt/**"
-      - ".github/workflows/builder.yml"
+    tags:
+      - "v*"
   pull_request:
     branches:
       - main
     paths:
       - "broadlink2mqtt/**"
+      - ".github/workflows/builder.yml"
 
 env:
   # The new builder actions only support these two, which is also the limit
