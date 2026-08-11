@@ -1,6 +1,6 @@
 ---
 name: Broadlink2MQTT
-version: "1.0.0"
+version: "1.0.1"
 slug: broadlink2mqtt
 description: >-
   Bridge Broadlink RM IR blasters to Home Assistant as native MQTT infrared

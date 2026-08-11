@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Final
 
 NAME: Final = "Broadlink2MQTT"
-VERSION: Final = "1.0.0"
+VERSION: Final = "1.0.1"
 
 # --- Broadlink IR packet layout -------------------------------------------
 # byte 0     packet type (0x26 = IR)

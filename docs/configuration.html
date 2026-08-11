@@ -174,12 +174,41 @@ devices:
 
     <h2>Running outside Home Assistant</h2>
     <p>
-      Without the Supervisor, options come from environment variables instead:
-      <code>MQTT_HOST</code>, <code>MQTT_PORT</code>, <code>MQTT_USERNAME</code>,
-      <code>MQTT_PASSWORD</code>, <code>MQTT_SSL</code>, <code>BASE_TOPIC</code>,
-      <code>DISCOVERY_PREFIX</code>, <code>AUTO_DISCOVER</code>, <code>PUBLISH_SENSORS</code>,
-      <code>LOG_LEVEL</code>, and <code>DEVICES</code> as a comma-separated list of IPs.
+      Without the Supervisor, every option above is available as an environment variable of the
+      same name in upper case — <code>MQTT_HOST</code>, <code>MQTT_PORT</code>,
+      <code>MQTT_USERNAME</code>, <code>MQTT_PASSWORD</code>, <code>MQTT_SSL</code>,
+      <code>BASE_TOPIC</code>, <code>DISCOVERY_PREFIX</code>, <code>AUTO_DISCOVER</code>,
+      <code>DISCOVERY_TIMEOUT</code>, <code>CAPTURE_WINDOW</code>, <code>CAPTURE_LIMIT</code>,
+      <code>POLL_INTERVAL</code>, <code>REARM_INTERVAL</code>, <code>PUBLISH_SENSORS</code> and
+      <code>LOG_LEVEL</code>. The exception is <code>devices</code>, which becomes
+      <code>DEVICES</code> as a comma-separated list of IP addresses.
     </p>
+
+    <div class="note">
+      <div>
+        On a bridge network, set <code>AUTO_DISCOVER=false</code> and pin the blaster with
+        <code>DEVICES</code>. Broadcast discovery needs host networking, but talking to a known
+        IP is plain unicast and works through Docker's NAT — which is usually the easier setup.
+      </div>
+    </div>
+
+    <h3>docker compose</h3>
+    <pre><code>services:
+  broadlink2mqtt:
+    image: ghcr.io/pranjal-joshi/broadlink2mqtt:1.0.1
+    container_name: broadlink2mqtt
+    restart: unless-stopped
+    environment:
+      - MQTT_HOST=mosquitto
+      - MQTT_USERNAME=addons
+      - MQTT_PASSWORD=${MQTT_PASSWORD:?set it in .env}
+      - AUTO_DISCOVER=false
+      - DEVICES=192.168.1.50
+      - LOG_LEVEL=debug
+    networks:
+      - ha_network
+    depends_on:
+      - mosquitto</code></pre>
   </div>
 </div>
 

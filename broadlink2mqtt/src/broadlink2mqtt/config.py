@@ -76,6 +76,7 @@ def _read_options() -> dict[str, Any]:
             _LOGGER.warning("Could not read %s: %s", OPTIONS_PATH, err)
 
     options: dict[str, Any] = {}
+    # Strings and numbers alike; load_config() coerces each to its real type.
     for key in (
         "mqtt_host",
         "mqtt_port",
@@ -84,6 +85,11 @@ def _read_options() -> dict[str, Any]:
         "base_topic",
         "discovery_prefix",
         "log_level",
+        "discovery_timeout",
+        "capture_window",
+        "capture_limit",
+        "poll_interval",
+        "rearm_interval",
     ):
         if (value := os.environ.get(key.upper())) is not None:
             options[key] = value

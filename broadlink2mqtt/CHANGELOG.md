@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.1
+
+### Added
+
+- **Full environment-variable parity for plain containers.** `discovery_timeout`,
+  `capture_window`, `capture_limit`, `poll_interval` and `rearm_interval` are now
+  read from the environment like every other option. Previously they were only
+  settable through the Supervisor's `options.json`, so a Docker deployment was
+  stuck with the defaults — which matters most for `CAPTURE_LIMIT`, since the
+  60-second default is tight for working through a whole remote.
+- Documented the bridge-network setup: with `AUTO_DISCOVER=false` and the blaster
+  pinned by `DEVICES`, no host networking is needed. Broadcast discovery requires
+  it, but talking to a known IP is plain unicast and works through Docker's NAT.
+
 ## 1.0.0
 
 Initial release.

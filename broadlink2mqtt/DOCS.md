@@ -171,6 +171,32 @@ With `base_topic: broadlink2mqtt` and a device whose MAC is `a1:b2:c3:d4:e5:f6`:
 | `broadlink2mqtt/a1b2c3d4e5f6/code/state` | out | `{"short", "base64", "timings", "modulation"}` |
 | `broadlink2mqtt/a1b2c3d4e5f6/sensor/state` | out | `{"temperature": 21.4, "humidity": 48.0}` |
 
+## Running as a plain container
+
+Outside the Supervisor there is no `/data/options.json`, so every option is read from an
+environment variable of the same name in upper case — `MQTT_HOST`, `MQTT_USERNAME`,
+`MQTT_PASSWORD`, `AUTO_DISCOVER`, `CAPTURE_LIMIT`, `LOG_LEVEL` and the rest. The one
+exception is `devices`, which becomes `DEVICES` as a comma-separated list of IPs.
+
+On a Docker bridge network, set `AUTO_DISCOVER=false` and pin the blaster with `DEVICES`.
+Broadcast discovery needs host networking, but talking to a known IP is plain unicast and
+works through Docker's NAT.
+
+```yaml
+services:
+  broadlink2mqtt:
+    image: ghcr.io/pranjal-joshi/broadlink2mqtt:1.0.1
+    restart: unless-stopped
+    environment:
+      - MQTT_HOST=mosquitto
+      - MQTT_USERNAME=addons
+      - MQTT_PASSWORD=${MQTT_PASSWORD:?set it in .env}
+      - AUTO_DISCOVER=false
+      - DEVICES=192.168.1.50
+    networks: [ha_network]
+    depends_on: [mosquitto]
+```
+
 ## Known limitations
 
 - **Remove the device from the official Broadlink integration.** Both fight over
