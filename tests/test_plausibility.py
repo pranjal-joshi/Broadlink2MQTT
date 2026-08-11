@@ -10,48 +10,7 @@ from __future__ import annotations
 import pytest
 from broadlink2mqtt.codec import is_plausible_ir, packet_to_timings, timings_to_packet
 
-# Captured from a real RM4 mini with no remote in use.
-AMBIENT_NOISE = [
-    328,
-    -21641,
-    197,
-    -85810,
-    229,
-    -64399,
-    262,
-    -42560,
-    656,
-    -20919,
-    164,
-    -42954,
-    295,
-    -42462,
-    164,
-    -21904,
-    164,
-    -107288,
-    164,
-    -64333,
-    229,
-    -21214,
-    328,
-    -21148,
-    229,
-    -107649,
-    164,
-    -109455,
-]
-
-
-def nec(address: int, command: int) -> list[int]:
-    """Build a 32-bit NEC frame as signed microsecond timings."""
-    timings = [9000, -4500]
-    for byte in (address, 255 - address, command, 255 - command):
-        for bit in range(8):
-            timings.append(560)
-            timings.append(-1690 if (byte >> bit) & 1 else -560)
-    timings.append(560)
-    return timings
+from tests.helpers import AMBIENT_NOISE, nec
 
 
 def test_rejects_real_ambient_interference() -> None:

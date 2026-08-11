@@ -17,7 +17,7 @@ from broadlink2mqtt.const import DEGRADED_AFTER_ERRORS
 from broadlink2mqtt.device import FrontEnd
 from broadlink2mqtt.receiver import CaptureWindow
 
-from tests.test_plausibility import AMBIENT_NOISE, nec
+from tests.helpers import AMBIENT_NOISE, nec
 
 GOOD = timings_to_packet(nec(0x04, 0x08))
 OTHER = timings_to_packet(nec(0x04, 0x02))

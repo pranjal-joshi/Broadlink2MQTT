@@ -89,7 +89,7 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["broadlink2mqtt/src"]
+pythonpath = ["broadlink2mqtt/src", "."]
 asyncio_mode = "auto"
 addopts = "-ra -q --strict-markers"
 markers = [
