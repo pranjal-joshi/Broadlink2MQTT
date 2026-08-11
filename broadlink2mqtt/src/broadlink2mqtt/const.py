@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Final
 
 NAME: Final = "Broadlink2MQTT"
-VERSION: Final = "1.0.2"
+VERSION: Final = "1.1.0-beta.1"
 
 # --- Broadlink IR packet layout -------------------------------------------
 # byte 0     packet type (0x26 = IR)
@@ -31,6 +31,22 @@ ERROR_BACKOFF: Final = 5.0
 TRANSMIT_COOLDOWN: Final = 0.3
 CAPTURE_WINDOW: Final = 15.0
 CAPTURE_LIMIT: Final = 60.0
+
+# --- Signal plausibility ---------------------------------------------------
+# Ambient IR trips a capture just as a remote does. Real protocols keep their
+# within-frame spaces to a few milliseconds (NEC's longest is 4.5 ms); the
+# interference measured on an idle RM4 mini had every space beyond 20 ms.
+MAX_MEDIAN_SPACE_US: Final = 10_000
+
+# A held remote sends repeat frames every ~110 ms; without this the same code
+# would be republished on every poll.
+DEDUPE_INTERVAL: Final = 1.0
+
+# --- Watchdog --------------------------------------------------------------
+# Consecutive device failures before the receiver is declared degraded: it
+# backs off hard and reports unavailable rather than hammering a sick device.
+DEGRADED_AFTER_ERRORS: Final = 5
+DEGRADED_BACKOFF: Final = 30.0
 
 # --- MQTT ------------------------------------------------------------------
 DEFAULT_BASE_TOPIC: Final = "broadlink2mqtt"

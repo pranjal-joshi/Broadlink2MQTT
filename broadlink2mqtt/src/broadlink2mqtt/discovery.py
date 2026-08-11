@@ -33,6 +33,7 @@ class Topics:
     learn_state: str
     code_state: str
     sensor_state: str
+    health_state: str
 
     @classmethod
     def build(cls, base_topic: str, slug: str) -> Topics:
@@ -46,6 +47,7 @@ class Topics:
             learn_state=f"{root}/learn/state",
             code_state=f"{root}/code/state",
             sensor_state=f"{root}/sensor/state",
+            health_state=f"{root}/health/state",
         )
 
 
@@ -143,6 +145,20 @@ def build_entities(
                 "value_template": "{{ value_json.short }}",
                 "json_attributes_topic": topics.code_state,
                 "icon": "mdi:remote",
+                "entity_category": "diagnostic",
+            },
+        ),
+        (
+            # Continuous listening is best-effort. This entity is how that
+            # shows up as data — noise rate, error streaks, capture counts —
+            # instead of being guessed at from a flaky automation.
+            f"{discovery_prefix}/sensor/{slug}/capture_health/config",
+            {
+                **base("capture_health", "Capture health"),
+                "state_topic": topics.health_state,
+                "value_template": "{{ value_json.status }}",
+                "json_attributes_topic": topics.health_state,
+                "icon": "mdi:radar",
                 "entity_category": "diagnostic",
             },
         ),

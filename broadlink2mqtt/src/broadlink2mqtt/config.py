@@ -58,6 +58,7 @@ class Config:
     capture_limit: float = CAPTURE_LIMIT
     poll_interval: float = POLL_INTERVAL
     rearm_interval: float = REARM_INTERVAL
+    always_listen: bool = False
     publish_sensors: bool = True
     log_level: str = "info"
 
@@ -93,7 +94,7 @@ def _read_options() -> dict[str, Any]:
     ):
         if (value := os.environ.get(key.upper())) is not None:
             options[key] = value
-    for key in ("auto_discover", "mqtt_ssl", "publish_sensors"):
+    for key in ("auto_discover", "mqtt_ssl", "publish_sensors", "always_listen"):
         if (value := os.environ.get(key.upper())) is not None:
             options[key] = value.strip().lower() in ("1", "true", "yes", "on")
     if hosts := os.environ.get("DEVICES", "").strip():
@@ -160,6 +161,7 @@ async def load_config() -> Config:
         capture_limit=float(options.get("capture_limit") or CAPTURE_LIMIT),
         poll_interval=float(options.get("poll_interval") or POLL_INTERVAL),
         rearm_interval=float(options.get("rearm_interval") or REARM_INTERVAL),
+        always_listen=bool(options.get("always_listen", False)),
         publish_sensors=bool(options.get("publish_sensors", True)),
         log_level=str(options.get("log_level") or "info"),
     )

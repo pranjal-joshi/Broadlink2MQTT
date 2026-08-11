@@ -11,11 +11,18 @@ conventions and fills in the one field the upstream encoder leaves blank.
 
 from __future__ import annotations
 
+import statistics
 from collections.abc import Sequence
 
 from broadlink.remote import data_to_pulses, pulses_to_data
 
-from .const import HEADER_LEN, IR_PACKET_TYPE, MAX_REPEAT, REPEAT_BYTE
+from .const import (
+    HEADER_LEN,
+    IR_PACKET_TYPE,
+    MAX_MEDIAN_SPACE_US,
+    MAX_REPEAT,
+    REPEAT_BYTE,
+)
 
 
 def timings_to_packet(timings: Sequence[int], repeat_count: int = 0) -> bytes:
@@ -58,3 +65,25 @@ def packet_to_timings(packet: bytes) -> list[int]:
     if not timings:
         raise ValueError("packet contained no pulses")
     return timings
+
+
+def is_plausible_ir(timings: Sequence[int]) -> bool:
+    """Return False for a capture that cannot be a consumer IR frame.
+
+    Ambient infrared — fluorescent flicker, PIR sensors, camera illuminators —
+    trips the device's learning capture exactly as a remote does, but looks
+    nothing like a protocol: sub-millisecond marks separated by tens of
+    milliseconds. Measured on an idle RM4 mini, roughly one spurious capture
+    every 18 seconds, which at a 1 Hz poll buries real remotes under thousands
+    of phantoms a day.
+
+    The discriminator is the *median* space. No consumer protocol has a
+    within-frame gap beyond a few milliseconds (NEC's longest is 4.5 ms),
+    while the observed interference had every space above 20 ms. Median rather
+    than maximum, so a long trailing gap cannot reject a genuine frame.
+    """
+    spaces = [-t for t in timings if t < 0]
+    if len(spaces) < 2:
+        # A real frame alternates many times; one space or none is not a code.
+        return False
+    return statistics.median(spaces) <= MAX_MEDIAN_SPACE_US

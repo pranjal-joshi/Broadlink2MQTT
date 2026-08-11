@@ -79,10 +79,12 @@ class Bridge:
                     device,
                     on_signal=self._make_signal_callback(device.slug),
                     on_state=self._make_state_callback(device.slug),
+                    on_health=self._make_health_callback(device.slug),
                     window=config.capture_window,
                     limit=config.capture_limit,
                     poll_interval=config.poll_interval,
                     rearm_interval=config.rearm_interval,
+                    always_listen=config.always_listen,
                 ),
             )
             self._runtimes[device.slug] = runtime
@@ -193,6 +195,14 @@ class Bridge:
                 PAYLOAD_ON if runtime.window.is_open else PAYLOAD_OFF,
                 retain=True,
             )
+            await self._publish(
+                runtime.topics.health_state,
+                json.dumps(
+                    runtime.window.health.as_dict()
+                    | {"status": runtime.window.health.status}
+                ),
+                retain=True,
+            )
             _LOGGER.info(
                 "Announced %d entities for %s", len(entities), runtime.device.name
             )
@@ -215,11 +225,18 @@ class Bridge:
     # -- device tasks ------------------------------------------------------
 
     async def _async_start_device_tasks(self) -> None:
-        """Start the periodic sensor poll for devices that have sensors."""
-        if not self._config.publish_sensors:
-            return
+        """Start the sensor poll, and continuous listening where enabled."""
         for runtime in self._runtimes.values():
-            if runtime.device.supports_sensors and not runtime.tasks:
+            # Continuous listening starts with the bridge rather than waiting
+            # for the switch, so a remote press syncs Home Assistant from boot.
+            if runtime.window.always_listen and not runtime.window.is_open:
+                await runtime.window.async_open()
+
+            if (
+                self._config.publish_sensors
+                and runtime.device.supports_sensors
+                and not runtime.tasks
+            ):
                 runtime.tasks.append(
                     asyncio.create_task(
                         self._async_poll_sensors(runtime),
@@ -350,6 +367,26 @@ class Bridge:
                 ),
                 retain=True,
             )
+
+        return callback
+
+    def _make_health_callback(self, slug: str):
+        """Return the callback that publishes receiver health."""
+
+        async def callback() -> None:
+            runtime = self._runtimes[slug]
+            health = runtime.window.health
+            await self._publish(
+                runtime.topics.health_state,
+                json.dumps(health.as_dict() | {"status": health.status}),
+                retain=True,
+            )
+            # A receiver the watchdog has given up on should read as
+            # unavailable, not as silently working.
+            if health.degraded and runtime.available:
+                await self._async_set_available(runtime, False)
+            elif not health.degraded and not runtime.available:
+                await self._async_set_available(runtime, True)
 
         return callback
 

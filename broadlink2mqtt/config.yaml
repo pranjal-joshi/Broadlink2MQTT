@@ -1,6 +1,6 @@
 ---
 name: Broadlink2MQTT
-version: "1.0.2"
+version: "1.1.0-beta.1"
 slug: broadlink2mqtt
 description: >-
   Bridge Broadlink RM IR blasters to Home Assistant as native MQTT infrared
@@ -34,6 +34,7 @@ options:
   capture_limit: 60
   poll_interval: 1
   rearm_interval: 20
+  always_listen: false
   publish_sensors: true
   log_level: info
 schema:
@@ -54,5 +55,6 @@ schema:
   capture_limit: int(5,900)
   poll_interval: float(0.2,10)
   rearm_interval: int(5,30)
+  always_listen: bool
   publish_sensors: bool
   log_level: list(trace|debug|info|notice|warning|error|fatal)

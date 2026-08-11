@@ -136,6 +136,7 @@ devices:
           <tr><td><code>capture_limit</code></td><td><code>60</code></td><td>Hard cap on one listening session, however many codes arrive.</td></tr>
           <tr><td><code>poll_interval</code></td><td><code>1</code></td><td>Seconds between <code>check_data</code> polls.</td></tr>
           <tr><td><code>rearm_interval</code></td><td><code>20</code></td><td>Re-arm learning mode this often, ahead of the firmware's own timeout.</td></tr>
+          <tr><td><code>always_listen</code></td><td><code>false</code></td><td>Listen continuously instead of in bounded windows. <strong>Experimental</strong> — see below.</td></tr>
           <tr><td><code>publish_sensors</code></td><td><code>true</code></td><td>Publish temperature/humidity for devices that have them.</td></tr>
           <tr><td><code>log_level</code></td><td><code>info</code></td><td>Set to <code>debug</code> when reporting a problem.</td></tr>
         </tbody>
@@ -147,6 +148,63 @@ devices:
         <code>capture_limit</code> exists on purpose. Learning mode keeps the device's receiver
         and LED active and blocks it from transmitting, so an unbounded session would leave your
         blaster permanently unable to send. Raise it if you need to, but do not remove the idea.
+      </div>
+    </div>
+
+    <h2 id="always-listen">Continuous listening <span class="cap" style="vertical-align:middle">experimental</span></h2>
+    <p>
+      Setting <code>always_listen: true</code> keeps the receiver armed permanently, so pressing
+      a physical remote keeps Home Assistant in sync rather than only working during a learning
+      window. The polling cost is modest — measured on an RM4 mini at 46&nbsp;ms median per poll,
+      no errors over 90&nbsp;seconds, under 5% of wall-clock in device I/O.
+    </p>
+
+    <div class="warn">
+      <div>
+        <strong>This is best-effort, not reliable, and the limits are structural.</strong>
+        A Broadlink has one IR front end, so it cannot transmit and listen at the same time: a
+        command sent while you press the remote loses one of the two. It is briefly deaf after
+        every capture and every transmission. Its LED stays lit continuously. And a permanently
+        armed session on cheap hardware has not been proven over weeks — this is exactly the
+        uncertainty that stopped
+        <a href="https://github.com/home-assistant/core/pull/177767" target="_blank" rel="noopener">core#177767</a>.
+      </div>
+    </div>
+
+    <p>
+      For dependable always-on reception, a dedicated ESPHome IR receiver (an ESP plus a
+      TSOP38238, about the price of a coffee) genuinely listens continuously, pushes events
+      instead of being polled, has no LED and no transmit conflict. The strongest setup is both:
+      ESPHome for receive, your Broadlink for transmit. This option exists for people who only
+      own a Broadlink.
+    </p>
+
+    <h3>Watching whether it is actually working</h3>
+    <p>
+      Because it is best-effort, the add-on publishes a <strong>Capture health</strong>
+      diagnostic entity rather than leaving you to infer trouble from a flaky automation. Its
+      state is <code>listening</code>, <code>idle</code> or <code>degraded</code>, with counters
+      in its attributes:
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Attribute</th><th>What it tells you</th></tr></thead>
+        <tbody>
+          <tr><td><code>captures</code></td><td>Signals accepted and published.</td></tr>
+          <tr><td><code>noise_discarded</code></td><td>Captures rejected as ambient interference. A high and climbing number means something near the blaster is emitting IR.</td></tr>
+          <tr><td><code>duplicates_suppressed</code></td><td>Repeat frames from held buttons.</td></tr>
+          <tr><td><code>errors</code> / <code>consecutive_errors</code></td><td>Device failures. Five in a row trips the watchdog.</td></tr>
+          <tr><td><code>degraded</code></td><td>The watchdog has backed off to 30&nbsp;s and the device reads unavailable.</td></tr>
+          <tr><td><code>last_capture</code></td><td>When a real code last arrived.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <div>
+        With continuous listening on, the <strong>Learning mode</strong> switch becomes a live
+        override: turning it off stops listening until you turn it back on, which is useful
+        during a burst of outgoing commands.
       </div>
     </div>
 
@@ -164,6 +222,7 @@ devices:
           <tr><td><code>…/a1b2c3d4e5f6/learn/state</code></td><td><span class="dir-out">out</span></td><td><code>ON</code> / <code>OFF</code></td></tr>
           <tr><td><code>…/a1b2c3d4e5f6/code/state</code></td><td><span class="dir-out">out</span></td><td><code>{"short", "base64", "timings", "modulation"}</code></td></tr>
           <tr><td><code>…/a1b2c3d4e5f6/sensor/state</code></td><td><span class="dir-out">out</span></td><td><code>{"temperature": 21.4, "humidity": 48.0}</code></td></tr>
+          <tr><td><code>…/a1b2c3d4e5f6/health/state</code></td><td><span class="dir-out">out</span></td><td><code>{"status", "captures", "noise_discarded", "errors", …}</code></td></tr>
         </tbody>
       </table>
     </div>
@@ -195,7 +254,7 @@ devices:
     <h3>docker compose</h3>
     <pre><code>services:
   broadlink2mqtt:
-    image: ghcr.io/pranjal-joshi/broadlink2mqtt:1.0.2
+    image: ghcr.io/pranjal-joshi/broadlink2mqtt:1.1.0-beta.1
     container_name: broadlink2mqtt
     restart: unless-stopped
     environment:

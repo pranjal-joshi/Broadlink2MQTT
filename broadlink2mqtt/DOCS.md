@@ -74,8 +74,37 @@ where they were tuned against real hardware.
 | `capture_limit` | `60` | Hard cap on one listening session, however many codes arrive. |
 | `poll_interval` | `1` | Seconds between `check_data` polls. |
 | `rearm_interval` | `20` | Re-arm learning mode this often, ahead of the device's own timeout. |
+| `always_listen` | `false` | Listen continuously. **Experimental** — see below. |
 | `publish_sensors` | `true` | Publish temperature/humidity for devices that have them. |
 | `log_level` | `info` | Set to `debug` when reporting a problem. |
+
+### Continuous listening (experimental)
+
+`always_listen: true` keeps the receiver armed permanently, so pressing a
+physical remote keeps Home Assistant in sync. Polling is cheap — measured on an
+RM4 mini at 46 ms median, no errors over 90 s, under 5% of wall-clock in I/O.
+
+**It is best-effort, not reliable, and the limits are structural.** A Broadlink
+has one IR front end, so it cannot transmit and listen at once: a command sent
+while you press the remote loses one of the two. It is briefly deaf after every
+capture and every transmission. Its LED stays lit continuously. A permanently
+armed session has not been proven over weeks — the same uncertainty that
+stopped [core#177767][pr].
+
+For dependable always-on reception, use a dedicated ESPHome IR receiver; it
+listens continuously, pushes events, and has no transmit conflict. The best
+setup is ESPHome for receive and the Broadlink for transmit. This option is for
+people who only own a Broadlink.
+
+The **Capture health** entity reports what is actually happening: `listening` /
+`idle` / `degraded`, with `captures`, `noise_discarded`,
+`duplicates_suppressed`, `errors`, `consecutive_errors` and `last_capture` as
+attributes. A climbing `noise_discarded` means something near the blaster emits
+IR. Five consecutive failures trip a watchdog that backs off to 30 s and reports
+the device unavailable.
+
+With continuous listening on, the **Learning mode** switch becomes a live
+override: turning it off stops listening until switched back on.
 
 ## Entities
 
@@ -185,7 +214,7 @@ works through Docker's NAT.
 ```yaml
 services:
   broadlink2mqtt:
-    image: ghcr.io/pranjal-joshi/broadlink2mqtt:1.0.2
+    image: ghcr.io/pranjal-joshi/broadlink2mqtt:1.1.0-beta.1
     restart: unless-stopped
     environment:
       - MQTT_HOST=mosquitto

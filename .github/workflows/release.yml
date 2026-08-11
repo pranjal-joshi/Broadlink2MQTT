@@ -19,7 +19,16 @@ jobs:
 
       - name: Get version from tag
         id: version
-        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          # A tag carrying a pre-release suffix (v1.1.0-beta.1) publishes as a
+          # GitHub pre-release, so it never becomes the "latest" download.
+          case "${VERSION}" in
+            *-*) echo "prerelease=true"  >> "$GITHUB_OUTPUT" ;;
+            *)   echo "prerelease=false" >> "$GITHUB_OUTPUT" ;;
+          esac
+          echo "Version ${VERSION}"
 
       - name: Check the tag matches the add-on version
         run: |
@@ -36,6 +45,7 @@ jobs:
           name: "Release ${{ github.ref_name }}"
           body_path: broadlink2mqtt/CHANGELOG.md
           generate_release_notes: true
+          prerelease: ${{ steps.version.outputs.prerelease == 'true' }}
 
 # The container images are built by builder.yml, which triggers on the same tag
 # push and runs alongside this workflow.

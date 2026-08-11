@@ -1,0 +1,82 @@
+---
+configuration:
+  mqtt_host:
+    name: MQTT broker
+    description: >-
+      Leave blank to use the broker Home Assistant already knows about. Set it
+      only to point at an external broker.
+  mqtt_port:
+    name: MQTT port
+    description: Broker port. Usually 1883, or 8883 with TLS.
+  mqtt_username:
+    name: MQTT username
+    description: Leave blank when using the Supervisor's broker.
+  mqtt_password:
+    name: MQTT password
+    description: Leave blank when using the Supervisor's broker.
+  mqtt_ssl:
+    name: Use TLS
+    description: Connect to the broker over TLS.
+  base_topic:
+    name: Base topic
+    description: >-
+      Root of every topic this add-on owns. Changing it after the entities
+      exist creates a second set — delete the old device afterwards.
+  discovery_prefix:
+    name: Discovery prefix
+    description: >-
+      Must match the MQTT integration's discovery prefix. "homeassistant"
+      unless you changed it.
+  auto_discover:
+    name: Discover devices automatically
+    description: >-
+      Find blasters by UDP broadcast at startup. Broadcast does not cross
+      subnets, VLANs, or a Docker bridge network — add those devices by IP
+      below instead.
+  discovery_timeout:
+    name: Discovery timeout
+    description: Seconds to wait for blasters to answer the broadcast.
+  devices:
+    name: Devices
+    description: >-
+      Blasters to add by IP address, for when broadcast does not reach them.
+      Give each one a DHCP reservation.
+  capture_window:
+    name: Capture window
+    description: >-
+      Seconds to keep listening after learning mode is switched on, and after
+      each captured code.
+  capture_limit:
+    name: Capture limit
+    description: >-
+      Hard ceiling on one learning session, however many codes arrive. Raise it
+      if you are working through a long remote in one sitting.
+  poll_interval:
+    name: Poll interval
+    description: >-
+      Seconds between checks for a captured code. The device buffers a capture
+      until it is read, so polling faster does not catch more presses.
+  rearm_interval:
+    name: Re-arm interval
+    description: >-
+      How often to renew the learning session, ahead of the firmware's own
+      timeout. Leave this alone unless you know why you are changing it.
+  always_listen:
+    name: Continuous listening (experimental)
+    description: >-
+      Keep the receiver listening permanently, so pressing a physical remote
+      keeps Home Assistant in sync. Best-effort, not reliable — the blaster
+      cannot transmit and listen at the same time, so a command sent while you
+      press the remote loses one of the two, and it is briefly deaf after every
+      capture. Its LED stays lit continuously. Watch the "Capture health"
+      entity for the noise and error rates. For dependable, always-on
+      reception use a dedicated ESPHome IR receiver; this option is for people
+      who only own a Broadlink.
+  publish_sensors:
+    name: Publish sensors
+    description: >-
+      Publish temperature and humidity for devices that have them. Turn this
+      off if your blaster reports zeros — the RM4 mini has no sensor fitted.
+  log_level:
+    name: Log level
+    description: Set to debug when reporting a problem.

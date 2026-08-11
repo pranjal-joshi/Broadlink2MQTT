@@ -1,5 +1,51 @@
 # Changelog
 
+## 1.1.0-beta.1
+
+Pre-release. Continuous listening is new and only lightly proven — see the
+caveats before enabling it.
+
+### Added
+
+- **Continuous listening (`always_listen`, experimental, off by default).**
+  Keeps the receiver armed permanently so pressing a physical remote keeps
+  Home Assistant in sync. Measured on an RM4 mini this is cheap: 46 ms median
+  per poll, no errors over 90 s, under 5% of wall-clock in device I/O.
+
+  It is best-effort, not reliable, and the limits are structural rather than
+  fixable: the blaster cannot transmit and listen at once, so a command sent
+  while you press the remote loses one of the two; it is briefly deaf after
+  every capture and every transmission; and its LED stays lit continuously.
+  For dependable always-on reception, a dedicated ESPHome IR receiver is the
+  right hardware.
+
+- **Capture health diagnostic entity.** Publishes listening state, capture
+  count, noise discarded, duplicates suppressed, and error streaks. Continuous
+  listening is best-effort, so its unreliability is exposed as data rather
+  than left to be inferred from a flaky automation at midnight.
+
+- **Watchdog.** After five consecutive device failures the receiver backs off
+  to 30 s and reports unavailable, instead of hammering a sick device.
+
+### Fixed
+
+- **Ambient interference is no longer reported as an IR code.** Fluorescent
+  flicker, PIR sensors and camera illuminators trip the device's capture just
+  as a remote does; an idle RM4 mini produced one such capture roughly every
+  18 seconds. Captures whose median space exceeds 10 ms are now discarded —
+  no consumer protocol has a within-frame gap that long (NEC's longest is
+  4.5 ms), while the measured interference had every space beyond 20 ms.
+  Without this, continuous listening would bury real remotes under thousands
+  of phantom signals a day.
+
+- **A press arriving just before a session renewal was thrown away.** The
+  listen loop called `enter_learning()` before `check_data()` on a re-arm
+  tick, and arming discards whatever the device is holding. It now reads
+  first, then re-arms. Inherited from core#177767.
+
+- **Held buttons no longer republish every poll.** Identical captures within
+  one second are suppressed and counted.
+
 ## 1.0.2
 
 ### Fixed
