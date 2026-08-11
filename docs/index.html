@@ -3,174 +3,504 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Broadlink2MQTT for Home Assistant</title>
-  <meta name="description" content="Bridge Broadlink RM IR blasters to Home Assistant as native MQTT infrared emitter and receiver entities."/>
-  <meta property="og:title" content="Broadlink2MQTT for Home Assistant"/>
-  <meta property="og:description" content="Your Broadlink blaster, as real Home Assistant infrared entities — emitter, receiver, and a learning-mode switch."/>
+  <title>Broadlink2MQTT · IR blasters as Home Assistant infrared entities</title>
+  <meta name="description" content="Turn a Broadlink RM4 mini, RM4 pro or RM mini 3 into native Home Assistant infrared emitter and receiver entities over MQTT."/>
+  <meta property="og:title" content="Broadlink2MQTT"/>
+  <meta property="og:description" content="Your Broadlink blaster, as real Home Assistant infrared entities. Emitter, receiver, and a learning-mode switch — over MQTT discovery."/>
+  <meta name="theme-color" content="#07080b"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="assets/style.css"/>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230b1326%22/><circle cx=%2236%22 cy=%2250%22 r=%2216%22 fill=%22none%22 stroke=%22%234edea3%22 stroke-width=%227%22/><circle cx=%2236%22 cy=%2250%22 r=%225%22 fill=%22%23e9c349%22/><path d=%22M60 34a24 24 0 0 1 0 32%22 fill=%22none%22 stroke=%22%234edea3%22 stroke-width=%227%22 stroke-linecap=%22round%22/><path d=%22M74 26a38 38 0 0 1 0 48%22 fill=%22none%22 stroke=%22%234edea3%22 stroke-width=%227%22 stroke-linecap=%22round%22/></svg>"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2224%22 fill=%22%230d0f14%22/><circle cx=%2230%22 cy=%2250%22 r=%229%22 fill=%22%23ff4a38%22/><path d=%22M50 32a24 24 0 0 1 0 36%22 fill=%22none%22 stroke=%22%23ff4a38%22 stroke-width=%228%22 stroke-linecap=%22round%22/><path d=%22M68 22a40 40 0 0 1 0 56%22 fill=%22none%22 stroke=%22%2341bdf5%22 stroke-width=%228%22 stroke-linecap=%22round%22/></svg>"/>
+  <!-- Gates the scroll-reveal styles. Without it the content stays visible,
+       so a blocked app.js degrades to a plain page rather than a blank one. -->
+  <script>document.documentElement.className += " js";</script>
 </head>
 <body>
-  <nav class="nav">
-    <a class="nav-inner" href="index.html">
-      <span class="brand">Broadlink2MQTT<span class="accent">.</span></span>
-      <span class="badge">HA Add-on</span>
-    </a>
-    <div class="nav-links">
+
+<nav class="nav">
+  <a class="nav-brand" href="index.html">
+    <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true">
+      <rect width="100" height="100" rx="24" fill="#12151c" stroke="#2c3342" stroke-width="2"/>
+      <circle cx="30" cy="50" r="8" fill="#ff4a38"/>
+      <path d="M50 33a23 23 0 0 1 0 34" fill="none" stroke="#ff4a38" stroke-width="7" stroke-linecap="round"/>
+      <path d="M68 24a38 38 0 0 1 0 52" fill="none" stroke="#41bdf5" stroke-width="7" stroke-linecap="round"/>
+    </svg>
+    <span class="brand-text">Broadlink<span class="brand-2">2MQTT</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Overview</a>
+    <a href="install.html">Install</a>
+    <a href="configuration.html">Configuration</a>
+    <a href="usage.html">Usage</a>
+    <a href="faq.html">FAQ</a>
+  </div>
+  <a class="nav-gh" href="https://github.com/pranjal-joshi/Broadlink2MQTT" target="_blank" rel="noopener" aria-label="GitHub repository">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12,2A10,10 0 0,0 2,12C2,16.42 4.87,20.17 8.84,21.5C9.34,21.58 9.5,21.27 9.5,21C9.5,20.77 9.5,20.14 9.5,19.31C6.73,19.91 6.14,17.97 6.14,17.97C5.68,16.81 5.03,16.5 5.03,16.5C4.12,15.88 5.1,15.9 5.1,15.9C6.1,15.97 6.63,16.93 6.63,16.93C7.5,18.45 8.97,18 9.54,17.76C9.63,17.11 9.89,16.67 10.17,16.42C7.95,16.17 5.62,15.31 5.62,11.5C5.62,10.39 6,9.5 6.65,8.79C6.55,8.54 6.2,7.5 6.75,6.15C6.75,6.15 7.59,5.88 9.5,7.17C10.29,6.95 11.15,6.84 12,6.84C12.85,6.84 13.71,6.95 14.5,7.17C16.41,5.88 17.25,6.15 17.25,6.15C17.8,7.5 17.45,8.54 17.35,8.79C18,9.5 18.38,10.39 18.38,11.5C18.38,15.32 16.04,16.16 13.81,16.41C14.17,16.72 14.5,17.33 14.5,18.26C14.5,19.6 14.5,20.68 14.5,21C14.5,21.27 14.66,21.59 15.17,21.5C19.14,20.16 22,16.42 22,12A10,10 0 0,0 12,2Z"/></svg>
+  </a>
+</nav>
+
+<header class="hero">
+  <div class="hero-grid">
+    <div>
+      <span class="eyebrow"><span class="led-dot"></span> Home Assistant add-on · v1.0.0</span>
+      <h1>Your <span class="ir-text">infrared</span> blaster,<br/>as real <span class="ha-text">Home&nbsp;Assistant</span> entities.</h1>
+      <p class="lede">
+        Broadlink2MQTT turns an <strong>RM4 mini</strong>, <strong>RM4 pro</strong> or
+        <strong>RM mini&nbsp;3</strong> into native <code>infrared</code> emitter and receiver
+        entities over MQTT discovery — the ones the official integration cannot give you.
+        No custom components. No base64 wrangling.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="install.html">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/></svg>
+          Install the add-on
+        </a>
+        <a class="btn btn-ghost" href="https://github.com/pranjal-joshi/Broadlink2MQTT" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12,2A10,10 0 0,0 2,12C2,16.42 4.87,20.17 8.84,21.5C9.34,21.58 9.5,21.27 9.5,21C9.5,20.77 9.5,20.14 9.5,19.31C6.73,19.91 6.14,17.97 6.14,17.97C5.68,16.81 5.03,16.5 5.03,16.5C4.12,15.88 5.1,15.9 5.1,15.9C6.1,15.97 6.63,16.93 6.63,16.93C7.5,18.45 8.97,18 9.54,17.76C9.63,17.11 9.89,16.67 10.17,16.42C7.95,16.17 5.62,15.31 5.62,11.5C5.62,10.39 6,9.5 6.65,8.79C6.55,8.54 6.2,7.5 6.75,6.15C6.75,6.15 7.59,5.88 9.5,7.17C10.29,6.95 11.15,6.84 12,6.84C12.85,6.84 13.71,6.95 14.5,7.17C16.41,5.88 17.25,6.15 17.25,6.15C17.8,7.5 17.45,8.54 17.35,8.79C18,9.5 18.38,10.39 18.38,11.5C18.38,15.32 16.04,16.16 13.81,16.41C14.17,16.72 14.5,17.33 14.5,18.26C14.5,19.6 14.5,20.68 14.5,21C14.5,21.27 14.66,21.59 15.17,21.5C19.14,20.16 22,16.42 22,12A10,10 0 0,0 12,2Z"/></svg>
+          Source
+        </a>
+      </div>
+      <div class="hero-meta">
+        <span><span class="led-dot green"></span> Requires HA 2026.8+</span>
+        <span><span class="led-dot blue"></span> MQTT discovery</span>
+        <span><span class="led-dot"></span> aarch64 · amd64</span>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="stage-glow"></div>
+      <svg class="device-svg" viewBox="0 0 460 340" role="img" aria-label="A Broadlink RM4 mini emitting infrared">
+        <defs>
+          <linearGradient id="bodyGrad" x1="0" y1="0" x2="0.4" y2="1">
+            <stop offset="0%" stop-color="#33383f"/>
+            <stop offset="42%" stop-color="#161920"/>
+            <stop offset="100%" stop-color="#080a0d"/>
+          </linearGradient>
+          <linearGradient id="glossGrad" x1="0" y1="0" x2="0.3" y2="1">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.16"/>
+            <stop offset="46%" stop-color="#ffffff" stop-opacity="0.02"/>
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+          </linearGradient>
+          <radialGradient id="windowGrad">
+            <stop offset="0%" stop-color="#3a1410"/>
+            <stop offset="100%" stop-color="#0a0b0e"/>
+          </radialGradient>
+          <radialGradient id="emitGrad">
+            <stop offset="0%" stop-color="#ff8f6d"/>
+            <stop offset="55%" stop-color="#ff4a38"/>
+            <stop offset="100%" stop-color="#ff4a38" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+
+        <!-- IR emission -->
+        <g fill="none" stroke-linecap="round">
+          <path class="ir-arc" d="M260.4,127.9 A55,55 0 0,1 260.4,212.1" stroke="#ff4a38" stroke-width="7" opacity="0.9"/>
+          <path class="ir-arc" d="M282.9,101.1 A90,90 0 0,1 282.9,238.9" stroke="#ff5c42" stroke-width="6" opacity="0.7"/>
+          <path class="ir-arc" d="M305.4,74.2 A125,125 0 0,1 305.4,265.8" stroke="#ff6a4d" stroke-width="5" opacity="0.5"/>
+        </g>
+
+        <!-- Body -->
+        <rect x="55" y="85" width="170" height="170" rx="50" fill="url(#bodyGrad)" stroke="#2a303b" stroke-width="1.5"/>
+        <rect x="55" y="85" width="170" height="170" rx="50" fill="url(#glossGrad)"/>
+
+        <!-- IR window -->
+        <circle cx="140" cy="158" r="43" fill="url(#windowGrad)" stroke="#242932" stroke-width="1.5"/>
+        <circle cx="140" cy="158" r="26" fill="url(#emitGrad)" opacity="0.85"/>
+        <circle cx="140" cy="158" r="9" fill="#ff8064"/>
+
+        <!-- Status LED -->
+        <circle class="led" cx="140" cy="222" r="4.5" fill="#ff4a38"/>
+
+        <text x="140" y="272" text-anchor="middle" font-family="JetBrains Mono, monospace"
+              font-size="11" fill="#4a5364" letter-spacing="2">RM4 MINI</text>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="section-tag">The signal path</span>
+      <h2>From a remote in your hand to an entity in your dashboard</h2>
+      <p>Five hops. The add-on owns the middle one — everything either side is stock Home Assistant.</p>
+    </div>
+
+    <div class="signal-path reveal">
+      <div class="hop ir-side">
+        <div class="hop-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7.5" y="2.5" width="9" height="19" rx="3"/><circle cx="12" cy="7" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="17" r="1"/></svg>
+        </div>
+        <h4>Your remote</h4>
+        <p>Presses a button, emits a 38&nbsp;kHz burst</p>
+      </div>
+      <div class="hop ir-side">
+        <div class="hop-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="11" height="16" rx="4"/><circle cx="8.5" cy="12" r="2.2"/><path d="M17 9a5 5 0 0 1 0 6"/><path d="M20 6.5a9 9 0 0 1 0 11"/></svg>
+        </div>
+        <h4>RM4 blaster</h4>
+        <p>Captures it in learning mode, or transmits it</p>
+      </div>
+      <div class="hop bridge">
+        <div class="hop-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h13l-3.5-3.5"/><path d="M20 16H7l3.5 3.5"/></svg>
+        </div>
+        <h4>Broadlink2MQTT</h4>
+        <p>Converts packets to raw timings, both directions</p>
+      </div>
+      <div class="hop ha-side">
+        <div class="hop-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3.5" width="18" height="6" rx="2"/><rect x="3" y="14.5" width="18" height="6" rx="2"/><path d="M6.5 6.5h.01M6.5 17.5h.01"/></svg>
+        </div>
+        <h4>MQTT broker</h4>
+        <p>Discovery messages create the entities</p>
+      </div>
+      <div class="hop ha-side">
+        <div class="hop-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 3.5l9 8"/><path d="M5.5 10v10h13V10"/></svg>
+        </div>
+        <h4>Home Assistant</h4>
+        <p>Emitter, receiver, and a learning switch</p>
+      </div>
+    </div>
+    <div class="hop-rail"></div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="section-tag">Capture</span>
+      <h2>Watch a code arrive</h2>
+      <p>
+        Learning mode arms the blaster and polls it once a second. Every capture is decoded to
+        signed microsecond timings — positive is carrier&nbsp;on, negative is carrier&nbsp;off.
+      </p>
+    </div>
+
+    <div class="scope reveal" data-scope>
+      <div class="scope-bar">
+        <div class="scope-title" data-status><span class="led-dot"></span> captured</div>
+        <div class="scope-readout">
+          <span>edges <b data-edges>—</b></span>
+          <span>duration <b data-duration>—</b></span>
+          <span>carrier <b>38 kHz</b></span>
+        </div>
+      </div>
+      <div class="scope-body" data-wave></div>
+      <div class="scope-foot">
+        <span class="code-chip" data-code></span>
+        <button class="btn btn-primary" data-capture type="button">Capture a code</button>
+      </div>
+    </div>
+    <p class="muted center" style="margin-top:14px">
+      Real NEC frames, encoded with the same 32.84&nbsp;µs tick and <code>0x26</code> packet
+      header the add-on uses. Source: <span class="mono" data-sample>—</span>
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="section-tag blue">In Home Assistant</span>
+      <h2>One device, a full set of entities</h2>
+      <p>Created by MQTT discovery the moment the add-on starts. Nothing to add to YAML.</p>
+    </div>
+
+    <div class="entities reveal">
+      <div class="entity ir">
+        <div class="entity-dot">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="2.6"/><path d="M12 8a6 6 0 0 1 0 8"/><path d="M16 5.5a10 10 0 0 1 0 13"/><path d="M20 3a14 14 0 0 1 0 18"/></svg>
+        </div>
+        <div>
+          <div class="entity-name">Emitter</div>
+          <div class="entity-state">infrared · 2 min ago</div>
+        </div>
+      </div>
+      <div class="entity ir">
+        <div class="entity-dot">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="12" r="2.6"/><path d="M12 8a6 6 0 0 0 0 8"/><path d="M8 5.5a10 10 0 0 0 0 13"/><path d="M4 3a14 14 0 0 0 0 18"/></svg>
+        </div>
+        <div>
+          <div class="entity-name">Receiver</div>
+          <div class="entity-state">infrared · 9 s ago</div>
+        </div>
+      </div>
+      <div class="entity on">
+        <div class="entity-dot">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5 12 4l9 4.5-9 4.5z"/><path d="M7 11v5c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5v-5"/></svg>
+        </div>
+        <div>
+          <div class="entity-name">Learning mode</div>
+          <div class="entity-state">switch · on</div>
+        </div>
+      </div>
+      <div class="entity">
+        <div class="entity-dot">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7.5" y="2.5" width="9" height="19" rx="3"/><path d="M10 7h4M10 11h4M10 15h4"/></svg>
+        </div>
+        <div>
+          <div class="entity-name">Last captured code</div>
+          <div class="entity-state">sensor · JgBQAAAB…</div>
+        </div>
+      </div>
+      <div class="entity ha">
+        <div class="entity-dot">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10"/><circle cx="12" cy="17" r="3.5"/><path d="M9.5 6.5h5"/></svg>
+        </div>
+        <div>
+          <div class="entity-name">Temperature</div>
+          <div class="entity-state">sensor · 21.4 °C</div>
+        </div>
+      </div>
+      <div class="entity ha">
+        <div class="entity-dot">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5s5.5 6.1 5.5 9.6a5.5 5.5 0 0 1-11 0C6.5 9.6 12 3.5 12 3.5z"/></svg>
+        </div>
+        <div>
+          <div class="entity-name">Humidity</div>
+          <div class="entity-state">sensor · 48 %</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="section-tag">Hardware</span>
+      <h2>Supported blasters</h2>
+      <p>Every Broadlink RM with an IR front end. Sensors appear automatically where the hardware has them.</p>
+    </div>
+
+    <div class="devices reveal">
+      <div class="device-card">
+        <svg viewBox="0 0 120 120" role="img" aria-label="Broadlink RM4 mini">
+          <defs>
+            <linearGradient id="d1" x1="0" y1="0" x2="0.4" y2="1">
+              <stop offset="0%" stop-color="#333840"/><stop offset="45%" stop-color="#161920"/><stop offset="100%" stop-color="#08090c"/>
+            </linearGradient>
+          </defs>
+          <rect x="16" y="16" width="88" height="88" rx="28" fill="url(#d1)" stroke="#2a303b" stroke-width="1.4"/>
+          <circle cx="60" cy="54" r="20" fill="#0c0e12" stroke="#242932" stroke-width="1.2"/>
+          <circle cx="60" cy="54" r="7" fill="#ff4a38" opacity="0.9"/>
+          <circle cx="60" cy="86" r="2.6" fill="#ff4a38" opacity="0.7"/>
+        </svg>
+        <h3>RM4 mini</h3>
+        <div class="device-type">RM4MINI</div>
+        <div class="device-caps">
+          <span class="cap yes">IR</span>
+          <span class="cap yes">Temp</span>
+          <span class="cap yes">Humidity</span>
+        </div>
+      </div>
+
+      <div class="device-card">
+        <svg viewBox="0 0 120 120" role="img" aria-label="Broadlink RM4 pro">
+          <rect x="36" y="12" width="48" height="96" rx="24" fill="url(#d1)" stroke="#2a303b" stroke-width="1.4"/>
+          <ellipse cx="60" cy="30" rx="16" ry="8" fill="#0c0e12" stroke="#242932" stroke-width="1.2"/>
+          <circle cx="60" cy="62" r="9" fill="#ff4a38" opacity="0.85"/>
+          <rect x="46" y="86" width="28" height="2.4" rx="1.2" fill="#2a303b"/>
+          <circle cx="60" cy="98" r="2.6" fill="#ff4a38" opacity="0.7"/>
+        </svg>
+        <h3>RM4 pro</h3>
+        <div class="device-type">RM4PRO</div>
+        <div class="device-caps">
+          <span class="cap yes">IR</span>
+          <span class="cap yes">Temp</span>
+          <span class="cap yes">Humidity</span>
+          <span class="cap">RF n/a</span>
+        </div>
+      </div>
+
+      <div class="device-card">
+        <svg viewBox="0 0 120 120" role="img" aria-label="Broadlink RM mini 3">
+          <rect x="20" y="24" width="80" height="72" rx="24" fill="url(#d1)" stroke="#2a303b" stroke-width="1.4"/>
+          <circle cx="60" cy="56" r="18" fill="#0c0e12" stroke="#242932" stroke-width="1.2"/>
+          <circle cx="60" cy="56" r="6.5" fill="#ff4a38" opacity="0.9"/>
+          <circle cx="60" cy="84" r="2.4" fill="#ff4a38" opacity="0.7"/>
+        </svg>
+        <h3>RM mini 3</h3>
+        <div class="device-type">RMMINI · RMMINIB</div>
+        <div class="device-caps">
+          <span class="cap yes">IR</span>
+          <span class="cap">No sensors</span>
+        </div>
+      </div>
+
+      <div class="device-card">
+        <svg viewBox="0 0 120 120" role="img" aria-label="Broadlink RM pro">
+          <rect x="36" y="12" width="48" height="96" rx="24" fill="url(#d1)" stroke="#2a303b" stroke-width="1.4"/>
+          <ellipse cx="60" cy="30" rx="16" ry="8" fill="#0c0e12" stroke="#242932" stroke-width="1.2"/>
+          <circle cx="60" cy="62" r="9" fill="#ff4a38" opacity="0.85"/>
+          <circle cx="60" cy="98" r="2.6" fill="#ff4a38" opacity="0.7"/>
+        </svg>
+        <h3>RM pro</h3>
+        <div class="device-type">RMPRO</div>
+        <div class="device-caps">
+          <span class="cap yes">IR</span>
+          <span class="cap yes">Temp</span>
+          <span class="cap">RF n/a</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="muted center" style="margin-top:18px">
+      RF (315/433&nbsp;MHz) is out of scope — Home Assistant's infrared entities are IR only,
+      and RF captures are rejected rather than reported as bogus IR.
+    </p>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<section>
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="section-tag">Why an add-on</span>
+      <h2>Because the RM cannot listen passively</h2>
+    </div>
+
+    <div class="grid reveal">
+      <div class="card accent-ir">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5M12 16h.01"/></svg>
+        </div>
+        <h3>The hardware limit</h3>
+        <p>To receive anything, an RM must be put into learning mode and polled — and that session dies the moment anything else touches the IR front end.</p>
+      </div>
+      <div class="card accent-ha">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 8.5 3.5 12 7 15.5"/><path d="M17 8.5 20.5 12 17 15.5"/><path d="M14 5l-4 14"/></svg>
+        </div>
+        <h3>Why core said no</h3>
+        <p><a href="https://github.com/home-assistant/core/pull/177767" target="_blank" rel="noopener">core#177767</a> proposed doing exactly that inside the integration, and was closed. A core receiver entity is expected to be listening constantly.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18M8 4v5"/></svg>
+        </div>
+        <h3>So it lives here</h3>
+        <p>The objection was about <em>where the state machine lives</em>, not whether it works. In its own process, driven by a switch you control, the same approach is sound.</p>
+      </div>
+    </div>
+
+    <blockquote class="reveal" style="margin-top:28px;padding:18px 22px;border-left:2px solid var(--ha);background:var(--ha-wash);border-radius:0 12px 12px 0;color:var(--text-2)">
+      <p>“The Infrared receiver entity is meant to be used by devices that can receive constantly […] I don't think it should be implemented for Broadlink until Broadlink provides a firmware that allows for constant receiving.”</p>
+      <p class="muted" style="margin-top:10px">— maintainer review on core#177767</p>
+    </blockquote>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<section id="hair">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="section-tag blue">Ecosystem</span>
+      <h2>Pairs with HAIR</h2>
+      <p>
+        These are standard <code>infrared</code> entities, so anything that consumes the platform
+        can drive them. <a href="https://github.com/DAB-LABS/HAIR" target="_blank" rel="noopener">HAIR</a>
+        is a HACS integration that turns captured remotes into Home Assistant devices — and this
+        add-on supplies the half it was missing.
+      </p>
+    </div>
+
+    <div class="grid reveal" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+      <div class="card">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9 9l6 6M15 9l-6 6"/></svg>
+        </div>
+        <h3>Broadlink on its own</h3>
+        <p>HAIR's compatibility table lists the official Broadlink integration as transmit-only. There is no receiver entity, so the Sniffer has nothing to listen with.</p>
+        <div class="device-caps" style="justify-content:flex-start;margin-top:15px">
+          <span class="cap yes lg">TX</span><span class="cap no lg">RX</span>
+        </div>
+      </div>
+      <div class="card accent-ir">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>
+        </div>
+        <h3>With Broadlink2MQTT</h3>
+        <p>The receiver arrives as a native <code>InfraredReceiverEntity</code> over MQTT. HAIR picks up any integration exposing one automatically — no configuration on either side.</p>
+        <div class="device-caps" style="justify-content:flex-start;margin-top:15px">
+          <span class="cap yes lg">TX</span><span class="cap yes lg">RX</span>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin:38px 0 16px;font-size:1.15rem">Sniff a whole remote in one sitting</h3>
+    <ol class="steps reveal">
+      <li>
+        <h3>Turn on Learning mode</h3>
+        <p>The add-on arms the blaster. HAIR's <strong>Sniffer</strong> is a live listener, so it only hears while that capture window is open.</p>
+      </li>
+      <li>
+        <h3>Press every button on the remote</h3>
+        <p>Each source remote appears as its own card, with every signal shown as an S/L diamond fingerprint. Repeat frames from a held button are filtered out, and a neighbour's stray clicker can be dismissed.</p>
+      </li>
+      <li>
+        <h3>Adopt it</h3>
+        <p>One click turns the captured remote into a Home Assistant device with a button entity per signal — no YAML, no base64 copied by hand.</p>
+      </li>
+      <li>
+        <h3>Keep the codes</h3>
+        <p>HAIR's <strong>Closet</strong> is a portable code library of device profiles. It also imports SmartIR JSON, Flipper Zero <code>.ir</code> files, LIRC <code>lircd.conf</code>, and Girr exports, or takes a Pronto hex paste through the Clipper.</p>
+      </li>
+    </ol>
+
+    <div class="note reveal">
+      <div>
+        Raise <code>capture_limit</code> before a long session. The default closes the window after
+        60 seconds, which is tight for working through a 40-button air conditioner remote.
+      </div>
+    </div>
+
+    <div class="warn reveal">
+      <div>
+        <strong>One blaster cannot send and listen at the same time.</strong> An RM has a single IR
+        front end, and this add-on deliberately suppresses captures of its own transmissions — so
+        HAIR's <strong>Mirror</strong> will report <em>SENT</em> but never <em>SENT and HEARD</em>
+        from a single device. Add a second blaster if you want that confirmation.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container center">
+    <div class="section-head reveal" style="margin:0 auto 28px">
+      <h2>Ready in about two minutes</h2>
+      <p>Add the repository, install, start. If you run the Mosquitto add-on there is nothing to configure.</p>
+    </div>
+    <div class="cta-row reveal" style="justify-content:center">
+      <a class="btn btn-primary" href="install.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/></svg>
+        Installation guide
+      </a>
+      <a class="btn btn-ghost" href="usage.html">Usage &amp; recipes</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <span>Broadlink2MQTT · a Home Assistant add-on · MIT</span>
+    <div class="footer-links">
       <a href="install.html">Install</a>
       <a href="configuration.html">Configuration</a>
       <a href="usage.html">Usage</a>
       <a href="faq.html">FAQ</a>
+      <a href="https://github.com/pranjal-joshi/Broadlink2MQTT" target="_blank" rel="noopener">GitHub</a>
     </div>
-  </nav>
+  </div>
+</footer>
 
-  <header class="hero">
-    <h1>Your Broadlink blaster, as real <span class="accent">Home Assistant</span><br/><span class="typed" id="typed-word"></span><span class="typed-cursor" aria-hidden="true"></span></h1>
-    <p class="lede">An add-on that bridges Broadlink RM devices to MQTT and publishes them as native <code>infrared</code> emitter and receiver entities — the ones the official integration cannot give you. No custom components, no YAML templates, no base64 wrangling.</p>
-    <div class="cta-row">
-      <a class="btn btn-primary" href="install.html"><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C17.5 2 22 6.5 22 12C22 17.5 17.5 22 12 22C6.5 22 2 17.5 2 12C2 6.5 6.5 2 12 2M8 17H16V15H8V17M16 10H13.5V6H10.5V10H8L12 14L16 10Z"/></svg>Install Now</a>
-      <a class="btn btn-ghost" href="https://github.com/pranjal-joshi/Broadlink2MQTT" target="_blank" rel="noopener"><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12,2A10,10 0 0,0 2,12C2,16.42 4.87,20.17 8.84,21.5C9.34,21.58 9.5,21.27 9.5,21C9.5,20.77 9.5,20.14 9.5,19.31C6.73,19.91 6.14,17.97 6.14,17.97C5.68,16.81 5.03,16.5 5.03,16.5C4.12,15.88 5.1,15.9 5.1,15.9C6.1,15.97 6.63,16.93 6.63,16.93C7.5,18.45 8.97,18 9.54,17.76C9.63,17.11 9.89,16.67 10.17,16.42C7.95,16.17 5.62,15.31 5.62,11.5C5.62,10.39 6,9.5 6.65,8.79C6.55,8.54 6.2,7.5 6.75,6.15C6.75,6.15 7.59,5.88 9.5,7.17C10.29,6.95 11.15,6.84 12,6.84C12.85,6.84 13.71,6.95 14.5,7.17C16.41,5.88 17.25,6.15 17.25,6.15C17.8,7.5 17.45,8.54 17.35,8.79C18,9.5 18.38,10.39 18.38,11.5C18.38,15.32 16.04,16.16 13.81,16.41C14.17,16.72 14.5,17.33 14.5,18.26C14.5,19.6 14.5,20.68 14.5,21C14.5,21.27 14.66,21.59 15.17,21.5C19.14,20.16 22,16.42 22,12A10,10 0 0,0 12,2Z"/></svg>GitHub</a>
-      <a class="btn btn-ghost" href="https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fpranjal-joshi%2FBroadlink2MQTT" target="_blank" rel="noopener"><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12,3L2,12H5V20H19V12H22L12,3M12,8.75A2.25,2.25 0 0,1 14.25,11A2.25,2.25 0 0,1 12,13.25A2.25,2.25 0 0,1 9.75,11A2.25,2.25 0 0,1 12,8.75Z"/></svg>Add to Home Assistant</a>
-    </div>
-  </header>
-
-  <section>
-    <div class="container">
-      <h2 class="section-title">Why this exists</h2>
-      <p class="section-sub">Home Assistant 2026.4 added infrared entities. 2026.8 added the MQTT emitter and receiver schemas. The official Broadlink integration still cannot use either — and there is a good reason.</p>
-      <div class="content">
-        <p>A Broadlink RM <strong>cannot listen passively</strong>. To receive anything it must be put into learning mode and polled, and that session dies the moment anything else touches the IR front end. <a href="https://github.com/home-assistant/core/pull/177767" target="_blank" rel="noopener">core#177767</a> proposed doing exactly that inside the integration, and was closed:</p>
-        <blockquote>
-          <p>The Infrared receiver entity is meant to be used by devices that can receive constantly […] I don't think it should be implemented for Broadlink until Broadlink provides a firmware that allows for constant receiving.</p>
-        </blockquote>
-        <p>The objection is about <em>where the state machine lives</em>, not whether it works. Outside of core — where a capture window is driven by a switch you control — the same approach is perfectly sound. This add-on is that state machine, moved into its own process and wired to MQTT discovery.</p>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="container">
-      <h2 class="section-title">What you get</h2>
-      <p class="section-sub">Every blaster arrives as one Home Assistant device with a full set of entities.</p>
-      <div class="grid">
-        <div class="card">
-          <h3>📡 Infrared Emitter</h3>
-          <p>A real <code>infrared</code> entity. Works with <code>infrared.send_command</code> and with device integrations like LG Infrared.</p>
-        </div>
-        <div class="card">
-          <h3>🎯 Infrared Receiver</h3>
-          <p>Captured signals reported as raw microsecond timings, ready for automations and triggers.</p>
-        </div>
-        <div class="card">
-          <h3>🎓 Learning Mode Switch</h3>
-          <p>Opens a bounded capture window that extends as codes arrive and closes itself when you're done.</p>
-        </div>
-        <div class="card">
-          <h3>📋 Last Captured Code</h3>
-          <p>A sensor holding the most recent capture, with the base64 packet and raw timings as attributes.</p>
-        </div>
-        <div class="card">
-          <h3>🌡️ Temperature &amp; Humidity</h3>
-          <p>Published automatically for RM pro, RM4 mini and RM4 pro, so you can drop the official integration entirely.</p>
-        </div>
-        <div class="card">
-          <h3>🔌 Zero-config MQTT</h3>
-          <p>Leave the broker blank and the add-on asks the Supervisor for the one you already run. No credentials to copy.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="container">
-      <h2 class="section-title">Get started in 3 steps</h2>
-      <ol class="steps">
-        <li>
-          <h3>Add the repository</h3>
-          <p>Settings → Add-ons → Add-on Store → ⋮ → Repositories, then paste the repo URL. Full detail on the <a href="install.html">install page</a>.</p>
-        </li>
-        <li>
-          <h3>Install and start</h3>
-          <p>The defaults work if you run the Mosquitto broker add-on. Your blaster is found by UDP broadcast.</p>
-        </li>
-        <li>
-          <h3>Capture a code</h3>
-          <p>Turn on <strong>Learning mode</strong>, press a button on your remote, and watch the receiver fire. See <a href="usage.html">usage</a>.</p>
-        </li>
-      </ol>
-    </div>
-  </section>
-
-  <section>
-    <div class="container">
-      <h2 class="section-title">Supported devices</h2>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Device</th><th>Type</th><th>IR</th><th>Sensors</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>RM mini 3</td><td><code>RMMINI</code></td><td>✅</td><td>—</td></tr>
-            <tr><td>RM mini 3 (new firmware)</td><td><code>RMMINIB</code></td><td>✅</td><td>—</td></tr>
-            <tr><td>RM pro</td><td><code>RMPRO</code></td><td>✅</td><td>Temperature</td></tr>
-            <tr><td>RM4 mini</td><td><code>RM4MINI</code></td><td>✅</td><td>Temperature, humidity</td></tr>
-            <tr><td>RM4 pro</td><td><code>RM4PRO</code></td><td>✅</td><td>Temperature, humidity</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="section-sub muted">RF (315/433 MHz) is out of scope — Home Assistant's infrared entities are IR only, and RF captures are rejected rather than reported as bogus IR.</p>
-    </div>
-  </section>
-
-  <script>
-    (function () {
-      "use strict";
-      var words = [
-        "Infrared Entities",
-        "Emitter & Receiver",
-        "Learning Mode",
-        "MQTT Discovery"
-      ];
-      var el = document.getElementById("typed-word");
-      var wordIndex = 0;
-      var charIndex = 0;
-      var deleting = false;
-
-      function tick() {
-        var word = words[wordIndex];
-
-        if (!deleting) {
-          charIndex++;
-          el.textContent = word.slice(0, charIndex);
-          if (charIndex === word.length) {
-            deleting = true;
-            setTimeout(tick, 1600);
-            return;
-          }
-          setTimeout(tick, 90);
-          return;
-        }
-
-        charIndex--;
-        el.textContent = word.slice(0, charIndex);
-        if (charIndex === 0) {
-          deleting = false;
-          wordIndex = (wordIndex + 1) % words.length;
-          setTimeout(tick, 350);
-          return;
-        }
-        setTimeout(tick, 45);
-      }
-
-      tick();
-    })();
-  </script>
-
-  <footer>
-    <p><a href="index.html">Broadlink2MQTT</a> · a Home Assistant add-on · <a href="https://github.com/pranjal-joshi/Broadlink2MQTT" target="_blank" rel="noopener">Source</a> · MIT License</p>
-  </footer>
+<script src="assets/app.js"></script>
 </body>
 </html>

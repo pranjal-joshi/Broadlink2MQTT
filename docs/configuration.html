@@ -4,36 +4,47 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Configuration · Broadlink2MQTT</title>
-  <meta name="description" content="Every Broadlink2MQTT add-on option: MQTT, device discovery, capture window tuning, and the MQTT topic map."/>
+  <meta name="description" content="Every Broadlink2MQTT option: MQTT, device discovery, capture window tuning, and the full MQTT topic map."/>
+  <meta name="theme-color" content="#07080b"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="assets/style.css"/>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230b1326%22/><circle cx=%2236%22 cy=%2250%22 r=%2216%22 fill=%22none%22 stroke=%22%234edea3%22 stroke-width=%227%22/><circle cx=%2236%22 cy=%2250%22 r=%225%22 fill=%22%23e9c349%22/><path d=%22M60 34a24 24 0 0 1 0 32%22 fill=%22none%22 stroke=%22%234edea3%22 stroke-width=%227%22 stroke-linecap=%22round%22/><path d=%22M74 26a38 38 0 0 1 0 48%22 fill=%22none%22 stroke=%22%234edea3%22 stroke-width=%227%22 stroke-linecap=%22round%22/></svg>"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2224%22 fill=%22%230d0f14%22/><circle cx=%2230%22 cy=%2250%22 r=%229%22 fill=%22%23ff4a38%22/><path d=%22M50 32a24 24 0 0 1 0 36%22 fill=%22none%22 stroke=%22%23ff4a38%22 stroke-width=%228%22 stroke-linecap=%22round%22/><path d=%22M68 22a40 40 0 0 1 0 56%22 fill=%22none%22 stroke=%22%2341bdf5%22 stroke-width=%228%22 stroke-linecap=%22round%22/></svg>"/>
 </head>
 <body>
-  <nav class="nav">
-    <a class="nav-inner" href="index.html">
-      <span class="brand">Broadlink2MQTT<span class="accent">.</span></span>
-      <span class="badge">HA Add-on</span>
-    </a>
-    <div class="nav-links">
-      <a href="install.html">Install</a>
-      <a href="configuration.html">Configuration</a>
-      <a href="usage.html">Usage</a>
-      <a href="faq.html">FAQ</a>
-    </div>
-  </nav>
 
-  <div class="container">
-    <header class="page-header">
-      <h1>Configuration</h1>
-      <p>Every option is optional. The common case is to change nothing at all.</p>
-    </header>
+<nav class="nav">
+  <a class="nav-brand" href="index.html">
+    <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true">
+      <rect width="100" height="100" rx="24" fill="#12151c" stroke="#2c3342" stroke-width="2"/>
+      <circle cx="30" cy="50" r="8" fill="#ff4a38"/>
+      <path d="M50 33a23 23 0 0 1 0 34" fill="none" stroke="#ff4a38" stroke-width="7" stroke-linecap="round"/>
+      <path d="M68 24a38 38 0 0 1 0 52" fill="none" stroke="#41bdf5" stroke-width="7" stroke-linecap="round"/>
+    </svg>
+    <span class="brand-text">Broadlink<span class="brand-2">2MQTT</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Overview</a>
+    <a href="install.html">Install</a>
+    <a href="configuration.html">Configuration</a>
+    <a href="usage.html">Usage</a>
+    <a href="faq.html">FAQ</a>
+  </div>
+  <a class="nav-gh" href="https://github.com/pranjal-joshi/Broadlink2MQTT" target="_blank" rel="noopener" aria-label="GitHub repository">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12,2A10,10 0 0,0 2,12C2,16.42 4.87,20.17 8.84,21.5C9.34,21.58 9.5,21.27 9.5,21C9.5,20.77 9.5,20.14 9.5,19.31C6.73,19.91 6.14,17.97 6.14,17.97C5.68,16.81 5.03,16.5 5.03,16.5C4.12,15.88 5.1,15.9 5.1,15.9C6.1,15.97 6.63,16.93 6.63,16.93C7.5,18.45 8.97,18 9.54,17.76C9.63,17.11 9.89,16.67 10.17,16.42C7.95,16.17 5.62,15.31 5.62,11.5C5.62,10.39 6,9.5 6.65,8.79C6.55,8.54 6.2,7.5 6.75,6.15C6.75,6.15 7.59,5.88 9.5,7.17C10.29,6.95 11.15,6.84 12,6.84C12.85,6.84 13.71,6.95 14.5,7.17C16.41,5.88 17.25,6.15 17.25,6.15C17.8,7.5 17.45,8.54 17.35,8.79C18,9.5 18.38,10.39 18.38,11.5C18.38,15.32 16.04,16.16 13.81,16.41C14.17,16.72 14.5,17.33 14.5,18.26C14.5,19.6 14.5,20.68 14.5,21C14.5,21.27 14.66,21.59 15.17,21.5C19.14,20.16 22,16.42 22,12A10,10 0 0,0 12,2Z"/></svg>
+  </a>
+</nav>
 
-    <div class="content">
-      <h2>Defaults</h2>
-      <pre><code>mqtt_host: ""
+<div class="container">
+  <header class="page-head">
+    <h1>Configuration</h1>
+    <p>Every option is optional. The common case is to change nothing at all.</p>
+  </header>
+
+  <div class="prose">
+    <h2>Defaults</h2>
+    <pre><code>mqtt_host: ""
 mqtt_port: 1883
 mqtt_username: ""
 mqtt_password: ""
@@ -50,103 +61,141 @@ rearm_interval: 20
 publish_sensors: true
 log_level: info</code></pre>
 
-      <h2>MQTT</h2>
-      <p>Leave <code>mqtt_host</code> blank and the add-on asks the Supervisor for the broker you already configured. Fill these in only to point at an external broker.</p>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Option</th><th>Default</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr><td><code>mqtt_host</code></td><td><em>blank</em></td><td>Broker hostname. Blank means use the Supervisor's MQTT service.</td></tr>
-            <tr><td><code>mqtt_port</code></td><td><code>1883</code></td><td>Broker port.</td></tr>
-            <tr><td><code>mqtt_username</code></td><td><em>blank</em></td><td>Broker username.</td></tr>
-            <tr><td><code>mqtt_password</code></td><td><em>blank</em></td><td>Broker password.</td></tr>
-            <tr><td><code>mqtt_ssl</code></td><td><code>false</code></td><td>Connect with TLS.</td></tr>
-            <tr><td><code>base_topic</code></td><td><code>broadlink2mqtt</code></td><td>Root of every topic this add-on owns.</td></tr>
-            <tr><td><code>discovery_prefix</code></td><td><code>homeassistant</code></td><td>Must match your MQTT integration's discovery prefix.</td></tr>
-          </tbody>
-        </table>
-      </div>
+    <h2>MQTT</h2>
+    <p>
+      Leave <code>mqtt_host</code> blank and the add-on asks the Supervisor for the broker you
+      already configured. Fill these in only to point at an external broker.
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Option</th><th>Default</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>mqtt_host</code></td><td><em>blank</em></td><td>Broker hostname. Blank means use the Supervisor's MQTT service.</td></tr>
+          <tr><td><code>mqtt_port</code></td><td><code>1883</code></td><td>Broker port.</td></tr>
+          <tr><td><code>mqtt_username</code></td><td><em>blank</em></td><td>Broker username.</td></tr>
+          <tr><td><code>mqtt_password</code></td><td><em>blank</em></td><td>Broker password.</td></tr>
+          <tr><td><code>mqtt_ssl</code></td><td><code>false</code></td><td>Connect with TLS.</td></tr>
+          <tr><td><code>base_topic</code></td><td><code>broadlink2mqtt</code></td><td>Root of every topic this add-on owns.</td></tr>
+          <tr><td><code>discovery_prefix</code></td><td><code>homeassistant</code></td><td>Must match your MQTT integration's discovery prefix.</td></tr>
+        </tbody>
+      </table>
+    </div>
 
-      <div class="warn">
-        If you change <code>base_topic</code> after the entities exist, Home Assistant
-        will create a <em>second</em> set. Delete the old device from the MQTT
-        integration afterwards.
+    <div class="warn">
+      <div>
+        If you change <code>base_topic</code> after the entities exist, Home Assistant will create
+        a <em>second</em> set. Delete the old device from the MQTT integration afterwards.
       </div>
+    </div>
 
-      <h2>Devices</h2>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Option</th><th>Default</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr><td><code>auto_discover</code></td><td><code>true</code></td><td>Find devices by UDP broadcast at startup.</td></tr>
-            <tr><td><code>discovery_timeout</code></td><td><code>5</code></td><td>Seconds to wait for discovery replies.</td></tr>
-            <tr><td><code>devices</code></td><td><code>[]</code></td><td>Devices to add by IP address.</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p>Discovery is a UDP broadcast to <code>255.255.255.255:80</code>, which does not cross VLANs or subnets. If your blaster sits on another segment, list it explicitly:</p>
-      <pre><code>auto_discover: false
+    <h2>Devices</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Option</th><th>Default</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>auto_discover</code></td><td><code>true</code></td><td>Find devices by UDP broadcast at startup.</td></tr>
+          <tr><td><code>discovery_timeout</code></td><td><code>5</code></td><td>Seconds to wait for discovery replies.</td></tr>
+          <tr><td><code>devices</code></td><td><code>[]</code></td><td>Devices to add by IP address.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Discovery is a UDP broadcast to <code>255.255.255.255:80</code>, which does not cross VLANs
+      or subnets. If your blaster sits on another segment, list it explicitly:
+    </p>
+    <pre><code>auto_discover: false
 devices:
   - host: 192.168.1.50
     name: Living Room Blaster
   - host: 192.168.1.51</code></pre>
-      <p><code>name</code> is optional and only sets the device name shown in Home Assistant. Explicit entries and discovered devices are merged, so you can leave <code>auto_discover</code> on and still pin one device by IP.</p>
+    <p>
+      <code>name</code> is optional and only sets the device name shown in Home Assistant.
+      Explicit entries and discovered devices are merged, so you can leave
+      <code>auto_discover</code> on and still pin one device by IP.
+    </p>
 
-      <div class="note">
-        Give your blaster a DHCP reservation. Entities are keyed by MAC address, so a
-        changed IP will not duplicate anything — but the add-on has to find the device
-        before it can talk to it.
+    <div class="note">
+      <div>
+        Give your blaster a DHCP reservation. Entities are keyed by MAC address, so a changed IP
+        will not duplicate anything — but the add-on has to find the device before it can talk
+        to it.
       </div>
+    </div>
 
-      <h2>Capture behaviour</h2>
-      <p>You should not need to touch these. The values come from <a href="https://github.com/home-assistant/core/pull/177767" target="_blank" rel="noopener">core#177767</a>, where they were tuned against real hardware.</p>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Option</th><th>Default</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr><td><code>capture_window</code></td><td><code>15</code></td><td>Seconds to listen after the switch turns on, and after each capture.</td></tr>
-            <tr><td><code>capture_limit</code></td><td><code>60</code></td><td>Hard cap on one listening session, however many codes arrive.</td></tr>
-            <tr><td><code>poll_interval</code></td><td><code>1</code></td><td>Seconds between <code>check_data</code> polls.</td></tr>
-            <tr><td><code>rearm_interval</code></td><td><code>20</code></td><td>Re-arm learning mode this often, ahead of the firmware's own timeout.</td></tr>
-            <tr><td><code>publish_sensors</code></td><td><code>true</code></td><td>Publish temperature/humidity for devices that have them.</td></tr>
-            <tr><td><code>log_level</code></td><td><code>info</code></td><td>Set to <code>debug</code> when reporting a problem.</td></tr>
-          </tbody>
-        </table>
+    <h2>Capture behaviour</h2>
+    <p>
+      You should not need to touch these. The values come from
+      <a href="https://github.com/home-assistant/core/pull/177767" target="_blank" rel="noopener">core#177767</a>,
+      where they were tuned against real hardware.
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Option</th><th>Default</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>capture_window</code></td><td><code>15</code></td><td>Seconds to listen after the switch turns on, and after each capture.</td></tr>
+          <tr><td><code>capture_limit</code></td><td><code>60</code></td><td>Hard cap on one listening session, however many codes arrive.</td></tr>
+          <tr><td><code>poll_interval</code></td><td><code>1</code></td><td>Seconds between <code>check_data</code> polls.</td></tr>
+          <tr><td><code>rearm_interval</code></td><td><code>20</code></td><td>Re-arm learning mode this often, ahead of the firmware's own timeout.</td></tr>
+          <tr><td><code>publish_sensors</code></td><td><code>true</code></td><td>Publish temperature/humidity for devices that have them.</td></tr>
+          <tr><td><code>log_level</code></td><td><code>info</code></td><td>Set to <code>debug</code> when reporting a problem.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="warn">
+      <div>
+        <code>capture_limit</code> exists on purpose. Learning mode keeps the device's receiver
+        and LED active and blocks it from transmitting, so an unbounded session would leave your
+        blaster permanently unable to send. Raise it if you need to, but do not remove the idea.
       </div>
+    </div>
 
-      <div class="warn">
-        <code>capture_limit</code> exists on purpose. Learning mode keeps the device's
-        receiver and LED active and blocks it from transmitting, so an unbounded
-        session would leave your blaster permanently unable to send. Raise it if you
-        need to, but do not remove the idea.
-      </div>
+    <h2>MQTT topics</h2>
+    <p>With <code>base_topic: broadlink2mqtt</code> and a device whose MAC is <code>a1:b2:c3:d4:e5:f6</code>:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Topic</th><th>Dir</th><th>Payload</th></tr></thead>
+        <tbody>
+          <tr><td><code>broadlink2mqtt/status</code></td><td><span class="dir-out">out</span></td><td><code>online</code> / <code>offline</code> (last will)</td></tr>
+          <tr><td><code>…/a1b2c3d4e5f6/availability</code></td><td><span class="dir-out">out</span></td><td><code>online</code> / <code>offline</code></td></tr>
+          <tr><td><code>…/a1b2c3d4e5f6/emitter/set</code></td><td><span class="dir-in">in</span></td><td><code>{"timings": […], "modulation": 38000, "repeat_count": 0}</code></td></tr>
+          <tr><td><code>…/a1b2c3d4e5f6/receiver/state</code></td><td><span class="dir-out">out</span></td><td><code>{"timings": […], "modulation": 38000}</code></td></tr>
+          <tr><td><code>…/a1b2c3d4e5f6/learn/set</code></td><td><span class="dir-in">in</span></td><td><code>ON</code> / <code>OFF</code></td></tr>
+          <tr><td><code>…/a1b2c3d4e5f6/learn/state</code></td><td><span class="dir-out">out</span></td><td><code>ON</code> / <code>OFF</code></td></tr>
+          <tr><td><code>…/a1b2c3d4e5f6/code/state</code></td><td><span class="dir-out">out</span></td><td><code>{"short", "base64", "timings", "modulation"}</code></td></tr>
+          <tr><td><code>…/a1b2c3d4e5f6/sensor/state</code></td><td><span class="dir-out">out</span></td><td><code>{"temperature": 21.4, "humidity": 48.0}</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Entities go unavailable if <em>either</em> the bridge or the device drops, using
+      <code>availability_mode: all</code> across both topics.
+    </p>
 
-      <h2>MQTT topics</h2>
-      <p>With <code>base_topic: broadlink2mqtt</code> and a device whose MAC is <code>a1:b2:c3:d4:e5:f6</code>:</p>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Topic</th><th>Dir</th><th>Payload</th></tr></thead>
-          <tbody>
-            <tr><td><code>broadlink2mqtt/status</code></td><td>out</td><td><code>online</code> / <code>offline</code> (last will)</td></tr>
-            <tr><td><code>…/a1b2c3d4e5f6/availability</code></td><td>out</td><td><code>online</code> / <code>offline</code></td></tr>
-            <tr><td><code>…/a1b2c3d4e5f6/emitter/set</code></td><td><strong>in</strong></td><td><code>{"timings": […], "modulation": 38000, "repeat_count": 0}</code></td></tr>
-            <tr><td><code>…/a1b2c3d4e5f6/receiver/state</code></td><td>out</td><td><code>{"timings": […], "modulation": 38000}</code></td></tr>
-            <tr><td><code>…/a1b2c3d4e5f6/learn/set</code></td><td><strong>in</strong></td><td><code>ON</code> / <code>OFF</code></td></tr>
-            <tr><td><code>…/a1b2c3d4e5f6/learn/state</code></td><td>out</td><td><code>ON</code> / <code>OFF</code></td></tr>
-            <tr><td><code>…/a1b2c3d4e5f6/code/state</code></td><td>out</td><td><code>{"short", "base64", "timings", "modulation"}</code></td></tr>
-            <tr><td><code>…/a1b2c3d4e5f6/sensor/state</code></td><td>out</td><td><code>{"temperature": 21.4, "humidity": 48.0}</code></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p>Entities go unavailable if <em>either</em> the bridge or the device drops, using <code>availability_mode: all</code> across both topics.</p>
+    <h2>Running outside Home Assistant</h2>
+    <p>
+      Without the Supervisor, options come from environment variables instead:
+      <code>MQTT_HOST</code>, <code>MQTT_PORT</code>, <code>MQTT_USERNAME</code>,
+      <code>MQTT_PASSWORD</code>, <code>MQTT_SSL</code>, <code>BASE_TOPIC</code>,
+      <code>DISCOVERY_PREFIX</code>, <code>AUTO_DISCOVER</code>, <code>PUBLISH_SENSORS</code>,
+      <code>LOG_LEVEL</code>, and <code>DEVICES</code> as a comma-separated list of IPs.
+    </p>
+  </div>
+</div>
 
-      <h2>Running outside Home Assistant</h2>
-      <p>Without the Supervisor, options come from environment variables instead: <code>MQTT_HOST</code>, <code>MQTT_PORT</code>, <code>MQTT_USERNAME</code>, <code>MQTT_PASSWORD</code>, <code>MQTT_SSL</code>, <code>BASE_TOPIC</code>, <code>DISCOVERY_PREFIX</code>, <code>AUTO_DISCOVER</code>, <code>PUBLISH_SENSORS</code>, <code>LOG_LEVEL</code>, and <code>DEVICES</code> as a comma-separated list of IPs.</p>
+<footer>
+  <div class="footer-inner">
+    <span>Broadlink2MQTT · a Home Assistant add-on · MIT</span>
+    <div class="footer-links">
+      <a href="install.html">Install</a>
+      <a href="configuration.html">Configuration</a>
+      <a href="usage.html">Usage</a>
+      <a href="faq.html">FAQ</a>
+      <a href="https://github.com/pranjal-joshi/Broadlink2MQTT" target="_blank" rel="noopener">GitHub</a>
     </div>
   </div>
+</footer>
 
-  <footer>
-    <p><a href="index.html">Broadlink2MQTT</a> · a Home Assistant add-on · <a href="https://github.com/pranjal-joshi/Broadlink2MQTT" target="_blank" rel="noopener">Source</a> · MIT License</p>
-  </footer>
+<script src="assets/app.js"></script>
 </body>
 </html>

@@ -3,20 +3,70 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Not found · Broadlink2MQTT</title>
+  <title>Signal lost · Broadlink2MQTT</title>
   <meta name="robots" content="noindex"/>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <meta name="theme-color" content="#07080b"/>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="assets/style.css"/>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230b1326%22/><circle cx=%2236%22 cy=%2250%22 r=%2216%22 fill=%22none%22 stroke=%22%234edea3%22 stroke-width=%227%22/><circle cx=%2236%22 cy=%2250%22 r=%225%22 fill=%22%23e9c349%22/><path d=%22M60 34a24 24 0 0 1 0 32%22 fill=%22none%22 stroke=%22%234edea3%22 stroke-width=%227%22 stroke-linecap=%22round%22/><path d=%22M74 26a38 38 0 0 1 0 48%22 fill=%22none%22 stroke=%22%234edea3%22 stroke-width=%227%22 stroke-linecap=%22round%22/></svg>"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2224%22 fill=%22%230d0f14%22/><circle cx=%2230%22 cy=%2250%22 r=%229%22 fill=%22%23ff4a38%22/><path d=%22M50 32a24 24 0 0 1 0 36%22 fill=%22none%22 stroke=%22%23ff4a38%22 stroke-width=%228%22 stroke-linecap=%22round%22/><path d=%22M68 22a40 40 0 0 1 0 56%22 fill=%22none%22 stroke=%22%2341bdf5%22 stroke-width=%228%22 stroke-linecap=%22round%22/></svg>"/>
 </head>
 <body>
-  <header class="hero">
-    <h1>404 <span class="accent">·</span> signal lost</h1>
-    <p class="lede">That page isn't here. Nothing captured it either.</p>
-    <div class="cta-row">
-      <a class="btn btn-primary" href="index.html">Back to the start</a>
-      <a class="btn btn-ghost" href="https://github.com/pranjal-joshi/Broadlink2MQTT" target="_blank" rel="noopener">GitHub</a>
+
+<nav class="nav">
+  <a class="nav-brand" href="index.html">
+    <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true">
+      <rect width="100" height="100" rx="24" fill="#12151c" stroke="#2c3342" stroke-width="2"/>
+      <circle cx="30" cy="50" r="8" fill="#ff4a38"/>
+      <path d="M50 33a23 23 0 0 1 0 34" fill="none" stroke="#ff4a38" stroke-width="7" stroke-linecap="round"/>
+      <path d="M68 24a38 38 0 0 1 0 52" fill="none" stroke="#41bdf5" stroke-width="7" stroke-linecap="round"/>
+    </svg>
+    <span class="brand-text">Broadlink<span class="brand-2">2MQTT</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Overview</a>
+    <a href="install.html">Install</a>
+    <a href="configuration.html">Configuration</a>
+    <a href="usage.html">Usage</a>
+    <a href="faq.html">FAQ</a>
+  </div>
+</nav>
+
+<div class="container">
+  <section class="center" style="padding-top:80px">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.2em;color:var(--ir);margin-bottom:14px">
+      NO CARRIER
     </div>
-  </header>
+    <h1 style="font-size:clamp(2rem,5vw,3rem);margin-bottom:14px">404 · signal lost</h1>
+    <p class="lede" style="margin:0 auto 28px">
+      That page is not here, and nothing captured it on the way past.
+    </p>
+
+    <div class="scope" style="max-width:640px;margin:0 auto 30px">
+      <div class="scope-bar">
+        <div class="scope-title"><span class="led-dot"></span> receiver idle</div>
+        <div class="scope-readout"><span>edges <b>0</b></span></div>
+      </div>
+      <div class="scope-body">
+        <div class="scope-empty">no signal on this path</div>
+      </div>
+    </div>
+
+    <div class="cta-row" style="justify-content:center">
+      <a class="btn btn-primary" href="index.html">Back to the start</a>
+      <a class="btn btn-ghost" href="faq.html">Troubleshooting</a>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <span>Broadlink2MQTT · a Home Assistant add-on · MIT</span>
+    <div class="footer-links">
+      <a href="https://github.com/pranjal-joshi/Broadlink2MQTT" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
 </body>
 </html>
