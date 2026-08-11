@@ -6,7 +6,7 @@ description: >-
   Bridge Broadlink RM IR blasters to Home Assistant as native MQTT infrared
   emitter and receiver entities, with a learning-mode switch for capturing codes.
 url: https://github.com/pranjal-joshi/Broadlink2MQTT
-image: ghcr.io/pranjal-joshi/broadlink2mqtt-{arch}
+image: ghcr.io/pranjal-joshi/{arch}-broadlink2mqtt
 # cryptography (a hard dependency of python-broadlink) only publishes musl
 # wheels for aarch64 and x86_64; other architectures would need a Rust
 # toolchain to build it from source.
@@ -14,8 +14,6 @@ arch:
   - aarch64
   - amd64
 init: false
-startup: application
-boot: auto
 # Broadlink discovery is a UDP broadcast to 255.255.255.255:80, which does not
 # cross the add-on's bridge network.
 host_network: true

@@ -101,8 +101,8 @@ Announced 6 entities for RM4 pro</code></pre>
   -e MQTT_USERNAME=homeassistant \
   -e MQTT_PASSWORD=secret \
   -e LOG_LEVEL=info \
-  ghcr.io/pranjal-joshi/broadlink2mqtt-amd64:1.0.0</code></pre>
-      <p>Use <code>broadlink2mqtt-aarch64</code> on 64-bit ARM. Add <code>-e DEVICES=192.168.1.50,192.168.1.51</code> to skip broadcast discovery and address devices directly.</p>
+  ghcr.io/pranjal-joshi/amd64-broadlink2mqtt:1.0.0</code></pre>
+      <p>Use <code>aarch64-broadlink2mqtt</code> on 64-bit ARM, or <code>ghcr.io/pranjal-joshi/broadlink2mqtt:1.0.0</code> to let Docker pick the right one from the multi-arch manifest. Add <code>-e DEVICES=192.168.1.50,192.168.1.51</code> to skip broadcast discovery and address devices directly.</p>
 
       <h2>Architecture support</h2>
       <p><code>python-broadlink</code> depends on <code>cryptography</code>, which only publishes musl wheels for <code>aarch64</code> and <code>x86_64</code>. Building it for 32-bit ARM would need a Rust toolchain in the image, so <code>armv7</code>, <code>armhf</code> and <code>i386</code> are not supported.</p>

@@ -1,4 +1,6 @@
 ARG BUILD_FROM
+# The tag is supplied per architecture by build.yaml, so it cannot be pinned here.
+# hadolint ignore=DL3006
 FROM ${BUILD_FROM}
 
 ENV LANG=C.UTF-8 \

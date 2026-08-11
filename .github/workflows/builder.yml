@@ -19,51 +19,95 @@ on:
       - "broadlink2mqtt/**"
 
 env:
-  ADDON: broadlink2mqtt
+  # The new builder actions only support these two, which is also the limit
+  # imposed by cryptography's musl wheels. See broadlink2mqtt/config.yaml.
+  ARCHITECTURES: '["amd64", "aarch64"]'
+  IMAGE_NAME: broadlink2mqtt
+  BASE_IMAGE_TAG: 3.13-alpine3.22
+
+permissions:
+  contents: read
 
 jobs:
+  init:
+    name: Prepare
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v5
+
+      - name: Read the add-on version
+        id: version
+        run: |
+          VERSION=$(grep '^version:' "${IMAGE_NAME}/config.yaml" | cut -d'"' -f2)
+          if [ -z "${VERSION}" ]; then
+            echo "::error::Could not read version from ${IMAGE_NAME}/config.yaml"
+            exit 1
+          fi
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Building ${IMAGE_NAME} ${VERSION}"
+
+      - name: Build the architecture matrix
+        id: matrix
+        uses: home-assistant/builder/actions/prepare-multi-arch-matrix@2026.06.0
+        with:
+          architectures: ${{ env.ARCHITECTURES }}
+          image-name: ${{ env.IMAGE_NAME }}
+
   build:
     name: Build ${{ matrix.arch }}
-    runs-on: ubuntu-latest
+    needs: init
+    runs-on: ${{ matrix.os }}
 
     permissions:
       contents: read
+      id-token: write
       packages: write
 
     strategy:
       fail-fast: false
-      matrix:
-        arch:
-          - aarch64
-          - amd64
+      matrix: ${{ fromJSON(needs.init.outputs.matrix) }}
 
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v5
 
-      - name: Get the add-on version
-        id: version
-        run: |
-          VERSION=$(grep '^version:' "${ADDON}/config.yaml" | cut -d'"' -f2)
-          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-          echo "Building ${ADDON} ${VERSION} for ${{ matrix.arch }}"
-
       # Pull requests only verify that the image builds; nothing is published.
-      - name: Log in to the container registry
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v3
+      - name: Build image
+        uses: home-assistant/builder/actions/build-image@2026.06.0
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          arch: ${{ matrix.arch }}
+          image: ${{ matrix.image }}
+          context: ./broadlink2mqtt
+          version: ${{ needs.init.outputs.version }}
+          push: ${{ github.event_name != 'pull_request' }}
+          container-registry-password: ${{ secrets.GITHUB_TOKEN }}
+          build-args: |
+            BUILD_FROM=ghcr.io/home-assistant/${{ matrix.arch }}-base-python:${{ env.BASE_IMAGE_TAG }}
+          image-tags: |
+            ${{ needs.init.outputs.version }}
+            latest
 
-      - name: Build add-on
-        uses: home-assistant/builder@master
+  manifest:
+    name: Publish multi-arch manifest
+    needs: [init, build]
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      packages: write
+
+    steps:
+      - name: Publish manifest
+        uses: home-assistant/builder/actions/publish-multi-arch-manifest@2026.06.0
         with:
-          args: |
-            --${{ matrix.arch }} \
-            --target /data/${{ env.ADDON }} \
-            --image "${{ env.ADDON }}-{arch}" \
-            --docker-hub "ghcr.io/${{ github.repository_owner }}" \
-            --addon \
-            ${{ github.event_name == 'pull_request' && '--test' || '' }}
+          architectures: ${{ env.ARCHITECTURES }}
+          image-name: ${{ env.IMAGE_NAME }}
+          container-registry-password: ${{ secrets.GITHUB_TOKEN }}
+          image-tags: |
+            ${{ needs.init.outputs.version }}
+            latest
