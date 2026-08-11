@@ -185,7 +185,7 @@ works through Docker's NAT.
 ```yaml
 services:
   broadlink2mqtt:
-    image: ghcr.io/pranjal-joshi/broadlink2mqtt:1.0.1
+    image: ghcr.io/pranjal-joshi/broadlink2mqtt:1.0.2
     restart: unless-stopped
     environment:
       - MQTT_HOST=mosquitto

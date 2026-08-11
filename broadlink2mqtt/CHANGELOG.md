@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.0.2
+
+### Fixed
+
+- **The container never started.** s6-overlay runs `CMD` with a cleaned
+  environment, so the `PYTHONPATH=/app/src` set by `ENV` was stripped and the
+  entrypoint died with `No module named broadlink2mqtt`, crash-looping forever.
+  This affected every deployment — add-on and plain container alike. `CMD` now
+  goes through `with-contenv`, which re-imports the container environment from
+  `/run/s6/container_environment`.
+- **Configuration was invisible outside the Supervisor.** The same stripping
+  discarded runtime `-e` / compose `environment:` values, so a container
+  deployment could not be configured at all. Fixed by the same change.
+- The package is additionally registered with a `.pth` file in site-packages,
+  so importing our own code no longer depends on `PYTHONPATH` surviving at all.
+  Written via `site.getsitepackages()` rather than a hardcoded path, so it
+  follows the base image's Python version.
+
+Both faults were invisible to CI: the image built and published cleanly, and
+nothing in the pipeline ever ran it.
+
 ## 1.0.1
 
 ### Added

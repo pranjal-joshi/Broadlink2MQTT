@@ -1,6 +1,6 @@
 [project]
 name = "broadlink2mqtt"
-version = "1.0.1"
+version = "1.0.2"
 description = "Bridge Broadlink RM IR blasters to Home Assistant as MQTT infrared entities"
 readme = "README.md"
 requires-python = ">=3.12"

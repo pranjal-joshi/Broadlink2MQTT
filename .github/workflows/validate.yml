@@ -38,6 +38,56 @@ jobs:
         with:
           dockerfile: broadlink2mqtt/Dockerfile
 
+  # 1.0.0 and 1.0.1 both shipped an image that could not start: s6-overlay
+  # strips CMD's environment, so PYTHONPATH vanished and the entrypoint died
+  # with "No module named broadlink2mqtt". The build was green throughout,
+  # because nothing in CI ever ran the thing it published.
+  smoke:
+    name: Container smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v5
+
+      - name: Build the image
+        run: |
+          docker build \
+            --build-arg BUILD_FROM=ghcr.io/home-assistant/amd64-base-python:3.13-alpine3.22 \
+            -t broadlink2mqtt:smoke ./broadlink2mqtt
+
+      - name: It starts, imports, and reads its environment
+        run: |
+          # MQTT_HOST is set but no device is reachable, so a healthy container
+          # must fail on the *device* check. Failing on the MQTT check instead
+          # would mean the environment never reached the process.
+          set +e
+          out=$(docker run --rm \
+                  -e MQTT_HOST=127.0.0.1 \
+                  -e AUTO_DISCOVER=false \
+                  -e DEVICES=192.0.2.1 \
+                  -e DISCOVERY_TIMEOUT=1 \
+                  broadlink2mqtt:smoke 2>&1)
+          set -e
+          echo "$out"
+
+          if echo "$out" | grep -q "No module named"; then
+            echo "::error::The entrypoint could not import the package"
+            exit 1
+          fi
+          if echo "$out" | grep -q "No MQTT broker configured"; then
+            echo "::error::MQTT_HOST was set but never reached the process — the environment is being stripped"
+            exit 1
+          fi
+          if ! echo "$out" | grep -q "Starting Broadlink2MQTT"; then
+            echo "::error::The bridge never started"
+            exit 1
+          fi
+          if ! echo "$out" | grep -q "No Broadlink devices found"; then
+            echo "::error::Expected the device lookup to fail against TEST-NET-1"
+            exit 1
+          fi
+          echo "Started, imported, read its environment, and failed where expected."
+
   python:
     name: Lint and test
     runs-on: ubuntu-latest
